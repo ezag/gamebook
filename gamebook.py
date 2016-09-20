@@ -28,9 +28,9 @@ if __name__ == '__main__':
         layout = list(device.get_result())
         obj = layout[0]
         if obj.get_text().strip() != 'Playtime Percentage':
-            print(' not found')
+            print(' not found', file=sys.stderr)
             continue
-        print(' found\n')
+        print(' found\n', file=sys.stderr)
         players = layout[43].get_text().split('\n')
         position = layout[10].get_text().split('\n')
         off_snaps = layout[8].get_text().split('\n')
