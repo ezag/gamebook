@@ -12,6 +12,7 @@ isort==4.2.5
 lazy-object-proxy==1.2.2
 mccabe==0.5.2
 pathlib2==2.1.0
+pep8==1.7.0
 pexpect==4.2.1
 pickleshare==0.7.4
 prompt-toolkit==1.0.7
