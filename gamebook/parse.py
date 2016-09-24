@@ -56,3 +56,8 @@ class GamebookParser(object):
         assert len(layouts) == len(page_numbers)
         layouts.reverse()
         return zip(page_numbers, layouts)
+
+    def extract_teams(self):
+        pages = [page for _, page in self.playtime_percentage_pages()]
+        page = list(pages[0])
+        return tuple(page[i].get_text().strip() for i in (2, 3))
