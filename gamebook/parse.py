@@ -40,14 +40,19 @@ class GamebookParser(object):
         device = PDFPageAggregator(resource_manager, laparams=LAParams())
         interpreter = PDFPageInterpreter(resource_manager, device)
         pages = list(enumerate(self.pages(), 1))
-        start_index = None
+        start_page_num = None
+        layouts = []
         for page_num, page in reversed(pages):
             interpreter.process_page(page)
-            layout = list(device.get_result())
-            obj = layout[0]
+            layout = device.get_result()
+            layouts.append(layout)
+            obj = iter(layout).next()
             if obj.get_text().strip() == 'Playtime Percentage':
-                start_index = page_num - 1
+                start_page_num = page_num
                 break
-        if start_index is None:
+        if start_page_num is None:
             raise MissingPlaytimePercentage
-        return pages[start_index:]
+        page_numbers = range(start_page_num, len(pages) + 1)
+        assert len(layouts) == len(page_numbers)
+        layouts.reverse()
+        return zip(page_numbers, layouts)
