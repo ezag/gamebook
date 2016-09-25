@@ -28,6 +28,7 @@ class GamebookParser(object):
 
     def __init__(self, pdf_file):
         self.pdf_file = pdf_file
+        self._playtime_percentage_pages = None
 
     def pages(self):
         document = PDFDocument(PDFParser(self.pdf_file))
@@ -36,6 +37,8 @@ class GamebookParser(object):
         return PDFPage.create_pages(document)
 
     def playtime_percentage_pages(self):
+        if self._playtime_percentage_pages is not None:
+            return self._playtime_percentage_pages
         resource_manager = PDFResourceManager()
         device = PDFPageAggregator(resource_manager, laparams=LAParams())
         interpreter = PDFPageInterpreter(resource_manager, device)
@@ -55,9 +58,67 @@ class GamebookParser(object):
         page_numbers = range(start_page_num, len(pages) + 1)
         assert len(layouts) == len(page_numbers)
         layouts.reverse()
-        return zip(page_numbers, layouts)
+        self._playtime_percentage_pages = zip(page_numbers, layouts)
+        return self._playtime_percentage_pages
 
     def extract_teams(self):
         pages = [page for _, page in self.playtime_percentage_pages()]
         page = list(pages[0])
         return tuple(page[i].get_text().strip() for i in (2, 3))
+
+    def extract_playtime_percentage(self):  # pylint: disable=too-many-locals
+        pages = [list(page) for _, page in self.playtime_percentage_pages()]
+        left_team, right_team = self.extract_teams()
+        left_player_name_column = pages[0][43].get_text().split('\n')
+        #right_player_name_column = pages[0][22].get_text().split('\n')  # XXX
+        left_position_column = pages[0][10].get_text().split('\n')
+        #right_position_column = pages[0][25].get_text().split('\n')  # XXX
+        left_off_snaps_column = map(int, pages[0][8].get_text().strip('\n').split('\n'))
+        left_off_snaps_column += [0] * (
+            len(left_player_name_column) - len(left_off_snaps_column))
+        left_off_pct_column = [
+            int(n.rstrip('%')) for n in pages[0][9].get_text().strip('\n').split('\n')]
+        left_off_pct_column += [0] * (
+            len(left_player_name_column) - len(left_off_pct_column))
+        def_snaps_pct = pages[0][11].get_text().strip('\n').split('\n')
+        def_snaps_pct[-2:] = [' '.join(def_snaps_pct[-2:])]
+        left_def_snaps_column, left_def_pct_column = zip(*[
+            row.split(' ') for row in def_snaps_pct])
+        left_def_snaps_column = [0] * 18 + map(int, left_def_snaps_column)
+        left_def_snaps_column += [0] * (
+            len(left_player_name_column) - len(left_def_snaps_column))
+        left_def_pct_column = [0] * 18 + [
+            int(n.rstrip('%')) for n in left_def_pct_column]
+        left_def_pct_column += [0] * (
+            len(left_player_name_column) - len(left_def_pct_column))
+        left_spt_snaps_column = (
+            map(int, pages[0][12].get_text().strip('\n').split('\n')) +
+            [0] * 3 +
+            map(int, pages[0][14].get_text().strip('\n').split('\n')) +
+            [0] * 3 +
+            map(int, pages[0][16].get_text().strip('\n').split('\n')) +
+            [0] * 1 +
+            map(int, pages[0][17].get_text().strip('\n').split('\n')) +
+            [0] * 2 +
+            map(int, pages[0][18].get_text().strip('\n').split('\n')))
+        left_spt_pct_column = (
+            [int(n.rstrip('%')) for n in pages[0][13].get_text().strip('\n').split('\n')] +
+            [0] * 3 +
+            [int(n.rstrip('%')) for n in pages[0][15].get_text().strip('\n').split('\n')] +
+            [0] * 3 +
+            [int(n.rstrip('%')) for n in pages[0][19].get_text().strip('\n').split('\n')] +
+            [0] * 1 +
+            [int(n.rstrip('%')) for n in pages[0][20].get_text().strip('\n').split('\n')] +
+            [0] * 2 +
+            [int(n.rstrip('%')) for n in pages[0][21].get_text().strip('\n').split('\n')])
+        return (left_team, zip(
+            left_player_name_column,
+            left_position_column,
+            left_off_snaps_column,
+            left_off_pct_column,
+            left_def_snaps_column,
+            left_def_pct_column,
+            left_spt_snaps_column,
+            left_spt_pct_column,
+        )), (right_team, [
+            ])
