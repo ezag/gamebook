@@ -1,6 +1,8 @@
+from __future__ import division
+
 from collections import namedtuple
 
-from pdfminer.layout import LAParams
+from pdfminer.layout import LAParams, LTTextBoxHorizontal
 from pdfminer.converter import PDFPageAggregator
 from pdfminer.pdfdocument import PDFDocument
 from pdfminer.pdfinterp import PDFPageInterpreter, PDFResourceManager
@@ -66,6 +68,28 @@ class GamebookParser(object):
         pages = self.playtime_percentage_pages()
         page = list(pages[0])
         return tuple(page[i].get_text().strip() for i in (2, 3))
+
+    def split_teams(self):
+        pages = self.playtime_percentage_pages()
+        left_all, right_all, rest_all = [], [], []
+        for page in pages:
+            left, right, rest = [], [], []
+            x_center = (page.x1 - page.x0) / 2
+            for component in page:
+                target = rest
+                if isinstance(component, LTTextBoxHorizontal):
+                    if component.x1 <= x_center:
+                        target = left
+                    elif component.x0 >= x_center:
+                        target = right
+                target.append(component)
+            if left:
+                left_all.append(left)
+            if right:
+                right_all.append(right)
+            if rest:
+                rest_all.append(rest)
+        return left_all, right_all, rest_all
 
     def extract_playtime_percentage(self):  # pylint: disable=too-many-locals
         pages = map(list, self.playtime_percentage_pages())

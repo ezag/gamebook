@@ -33,6 +33,29 @@ def test_extract_teams():
                 'Green Bay Packers', 'Chicago Bears')
 
 
+def test_split_teams():
+
+    def indices(left_or_right):
+        return [
+            [component.index for component in per_page]
+            for per_page in left_or_right]
+
+    for gamekey in gamekeys:
+        with open(path_to_pdf(gamekey)) as pdf_file:
+            left, right, rest = GamebookParser(pdf_file).split_teams()
+            left_i, right_i = map(indices, [left, right])
+            assert left_i == [[
+                    2, 4, 5, 8, 9, 10, 11, 12, 13, 14,
+                    15, 16, 17, 18, 19, 20, 21, 43,
+            ]]
+            assert right_i == [[
+                    3, 6, 7, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
+                    32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42,
+                ], [
+                    0, 1, 2, 3,
+            ]]
+
+
 def test_extract_playtime_percentage():
     for gamekey in gamekeys:
         with open(path_to_pdf(gamekey)) as pdf_file:
