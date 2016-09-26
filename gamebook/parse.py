@@ -36,38 +36,39 @@ class GamebookParser(object):
             raise PDFTextExtractionNotAllowed
         return PDFPage.create_pages(document)
 
-    def playtime_percentage_pages(self):
-        if self._playtime_percentage_pages is not None:
-            return self._playtime_percentage_pages
-        resource_manager = PDFResourceManager()
-        device = PDFPageAggregator(resource_manager, laparams=LAParams())
-        interpreter = PDFPageInterpreter(resource_manager, device)
-        pages = list(enumerate(self.pages(), 1))
-        start_page_num = None
-        layouts = []
-        for page_num, page in reversed(pages):
-            interpreter.process_page(page)
-            layout = device.get_result()
-            layouts.append(layout)
-            obj = iter(layout).next()
-            if obj.get_text().strip() == 'Playtime Percentage':
-                start_page_num = page_num
-                break
-        if start_page_num is None:
-            raise MissingPlaytimePercentage
-        page_numbers = range(start_page_num, len(pages) + 1)
-        assert len(layouts) == len(page_numbers)
-        layouts.reverse()
-        self._playtime_percentage_pages = zip(page_numbers, layouts)
-        return self._playtime_percentage_pages
+    def playtime_percentage_pages(self, with_page_nums=False):
+        if self._playtime_percentage_pages is None:
+            resource_manager = PDFResourceManager()
+            device = PDFPageAggregator(resource_manager, laparams=LAParams())
+            interpreter = PDFPageInterpreter(resource_manager, device)
+            pages = list(enumerate(self.pages(), 1))
+            start_page_num = None
+            layouts = []
+            for page_num, page in reversed(pages):
+                interpreter.process_page(page)
+                layout = device.get_result()
+                layouts.append(layout)
+                obj = iter(layout).next()
+                if obj.get_text().strip() == 'Playtime Percentage':
+                    start_page_num = page_num
+                    break
+            if start_page_num is None:
+                raise MissingPlaytimePercentage
+            page_numbers = range(start_page_num, len(pages) + 1)
+            assert len(layouts) == len(page_numbers)
+            layouts.reverse()
+            self._playtime_percentage_pages = zip(page_numbers, layouts)
+        return (
+            self._playtime_percentage_pages if with_page_nums else
+            [page for _, page in self._playtime_percentage_pages])
 
     def extract_teams(self):
-        pages = [page for _, page in self.playtime_percentage_pages()]
+        pages = self.playtime_percentage_pages()
         page = list(pages[0])
         return tuple(page[i].get_text().strip() for i in (2, 3))
 
     def extract_playtime_percentage(self):  # pylint: disable=too-many-locals
-        pages = [list(page) for _, page in self.playtime_percentage_pages()]
+        pages = map(list, self.playtime_percentage_pages())
         left_team, right_team = self.extract_teams()
         left_player_name_column = pages[0][43].get_text().split('\n')
         #right_player_name_column = pages[0][22].get_text().split('\n')  # XXX
