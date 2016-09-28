@@ -25,8 +25,16 @@ PlaytimePercentage = namedtuple('PlaytimePercentage', (
 
 ComponentType = Enum(  # pylint: disable=invalid-name
     'ComponentType',
-    'team_name',
-)
+    ' '.join((
+        'team_name',
+        'off_header',
+        'def_spt_header',
+        'player_column',
+        'position_column',
+        'numeric_column',
+        'percentage_column',
+        'dual_column',
+    )))
 
 
 class MissingPlaytimePercentage(Exception):
@@ -100,8 +108,30 @@ class GamebookParser(object):
 
     @staticmethod
     def type_from_text(text):
-        text = text.strip()
-        return ComponentType.team_name
+        # pylint: disable=no-member
+        component_type = ComponentType.team_name
+        lines = text.strip().split('\n')
+        head = lines[0]
+        if head == 'Offense':
+            component_type = ComponentType.off_header
+        elif head == 'Defense Special Teams':
+            component_type = ComponentType.def_spt_header
+        elif head.isdigit():
+            component_type = ComponentType.numeric_column
+        elif head.endswith('%') and head.rstrip('%').isdigit():
+            component_type = ComponentType.percentage_column
+        elif head.isalpha() and len(head) <= 2 and head.isupper():
+            component_type = ComponentType.position_column
+        else:
+            fst, snd = head.split(' ', 3)[:2]
+            if (
+                    fst.isdigit() and snd.endswith('%') and
+                    snd.rstrip('%').isdigit()
+            ):
+                component_type = ComponentType.dual_column
+            if len(fst) == 1 and fst.isalpha() and snd.isalpha():
+                component_type = ComponentType.player_column
+        return component_type
 
     def extract_playtime_percentage(self):  # pylint: disable=too-many-locals
         pages = map(list, self.playtime_percentage_pages())
