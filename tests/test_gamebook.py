@@ -2,7 +2,7 @@ import os.path
 
 from pdfminer.layout import LTPage
 
-from gamebook.parse import GamebookParser
+from gamebook.parse import Column, GamebookParser, Grid
 
 
 gamekeys = (
@@ -54,6 +54,46 @@ def test_split_teams():
                 ], [
                     0, 1, 2, 3,
             ]]
+
+
+def test_grid_columns():
+    for gamekey in gamekeys:
+        with open(path_to_pdf(gamekey)) as pdf_file:
+            left, right, _ = GamebookParser(pdf_file).split_teams()
+            grid = Grid.from_components(left)
+            for component in left[0]:
+                if component.index in (
+                        8, 9,
+                ):
+                    assert grid.column_for(component) == Column.offense
+                elif component.index in (
+                        11,
+                ):
+                    assert grid.column_for(component) == Column.defense
+                elif component.index in (
+                        12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+                ):
+                    assert grid.column_for(component) == Column.special_teams
+            grid = Grid.from_components(right)
+            for component in right[0]:
+                if component.index in (
+                        23, 24, 
+                ):
+                    assert grid.column_for(component) == Column.offense
+                elif component.index in (
+                        26, 
+                ):
+                    assert grid.column_for(component) == Column.defense
+                elif component.index in (
+                        27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
+                        40, 41, 42,
+                ):
+                    assert grid.column_for(component) == Column.special_teams
+            for component in right[1]:
+                if component.index in (
+                        2, 3,
+                ):
+                    assert grid.column_for(component) == Column.special_teams
 
 
 def test_extract_playtime_percentage():

@@ -1,3 +1,4 @@
 [MESSAGES CONTROL]
 
 disable=locally-disabled,missing-docstring
+good-names=x

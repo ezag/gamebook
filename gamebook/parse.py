@@ -37,8 +37,61 @@ ComponentType = Enum(  # pylint: disable=invalid-name
     )))
 
 
+Column = Enum(  # pylint: disable=invalid-name
+    'Column',
+    ' '.join((
+        'offense',
+        'defense',
+        'special_teams',
+    )))
+
+
 class MissingPlaytimePercentage(Exception):
     pass
+
+
+class Grid(object):
+
+    def __init__(self):
+        self.y_0 = None
+        self.y_delta = None
+        self.x_off = None
+        self.x_def = None
+        self.x_spt = None
+
+    @classmethod
+    def from_components(cls, components):
+        # pylint: disable=no-member
+        grid = cls()
+        for component in components[0]:
+            if (
+                    GamebookParser.type_from_text(component.get_text()) ==
+                    ComponentType.off_header
+            ):
+                grid.x_off = (component.x0 + component.x1) / 2
+            if (
+                    GamebookParser.type_from_text(component.get_text()) ==
+                    ComponentType.def_spt_header
+            ):
+                grid.x_def = (3 * component.x0 + component.x1) / 4
+                grid.x_spt = (component.x0 + 3 * component.x1) / 4
+        for value in (grid.x_off, grid.x_def, grid.x_spt):
+            if value is None:
+                raise ValueError('Unable to derive full grid from components')
+        return grid
+
+    def column_for(self, component):
+        # pylint: disable=no-member
+        column = Column.offense
+        x = (component.x0 + component.x1) / 2
+        delta = abs(x - self.x_off)
+        if abs(x - self.x_def) < delta:
+            delta = abs(x - self.x_def)
+            column = Column.defense
+        if abs(x - self.x_spt) < delta:
+            delta = abs(x - self.x_spt)
+            column = Column.special_teams
+        return column
 
 
 class GamebookParser(object):
