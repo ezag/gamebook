@@ -2,6 +2,7 @@ from __future__ import division
 
 from collections import namedtuple
 
+from enum import Enum
 from pdfminer.layout import LAParams, LTTextBoxHorizontal
 from pdfminer.converter import PDFPageAggregator
 from pdfminer.pdfdocument import PDFDocument
@@ -20,6 +21,12 @@ PlaytimePercentage = namedtuple('PlaytimePercentage', (
     'spt_snaps',
     'spt_pct',
 ))
+
+
+ComponentType = Enum(  # pylint: disable=invalid-name
+    'ComponentType',
+    'team_name',
+)
 
 
 class MissingPlaytimePercentage(Exception):
@@ -90,6 +97,11 @@ class GamebookParser(object):
             if rest:
                 rest_all.append(rest)
         return left_all, right_all, rest_all
+
+    @staticmethod
+    def type_from_text(text):
+        text = text.strip()
+        return ComponentType.team_name
 
     def extract_playtime_percentage(self):  # pylint: disable=too-many-locals
         pages = map(list, self.playtime_percentage_pages())
