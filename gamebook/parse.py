@@ -53,8 +53,8 @@ class MissingPlaytimePercentage(Exception):
 class Grid(object):
 
     def __init__(self):
-        self.y_0 = None
-        self.y_delta = None
+        self.y_0 = []
+        self.y_delta = []
         self.x_off = None
         self.x_def = None
         self.x_spt = None
@@ -75,8 +75,21 @@ class Grid(object):
             ):
                 grid.x_def = (3 * component.x0 + component.x1) / 4
                 grid.x_spt = (component.x0 + 3 * component.x1) / 4
+        for page in components:
+            for component in page:
+                if (
+                        GamebookParser.type_from_text(component.get_text()) ==
+                        ComponentType.player_column
+                ):
+                    rows_num = len(component.get_text().strip().split('\n'))
+                    grid.y_0.append(component.y1)
+                    grid.y_delta.append(
+                        (component.y1 - component.y0) / rows_num)
         for value in (grid.x_off, grid.x_def, grid.x_spt):
             if value is None:
+                raise ValueError('Unable to derive full grid from components')
+        for value in (grid.y_0, grid.y_delta):
+            if len(value) < len(components):
                 raise ValueError('Unable to derive full grid from components')
         return grid
 
@@ -92,6 +105,9 @@ class Grid(object):
             delta = abs(x - self.x_spt)
             column = Column.special_teams
         return column
+
+    def top_index(self, component, page_num=0):
+        return (self.y_0[page_num] - component.y1) // self.y_delta[page_num]
 
 
 class GamebookParser(object):

@@ -96,6 +96,81 @@ def test_grid_columns():
                     assert grid.column_for(component) == Column.special_teams
 
 
+def test_grid_rows():
+    for gamekey in gamekeys:
+        with open(path_to_pdf(gamekey)) as pdf_file:
+            left, right, _ = GamebookParser(pdf_file).split_teams()
+            grid = Grid.from_components(left)
+            for component in left[0]:
+                if component.index in (
+                        8, 9, 12, 13,
+                ):
+                    assert grid.top_index(component) == 0
+                if component.index in (
+                        14, 15,
+                ):
+                    assert grid.top_index(component) == 6
+                if component.index in (
+                        16, 19,
+                ):
+                    assert grid.top_index(component) == 10
+                if component.index in (
+                        11,
+                ):
+                    assert grid.top_index(component) == 18
+                if component.index in (
+                        17, 20,
+                ):
+                    assert grid.top_index(component) == 30
+                if component.index in (
+                        18, 21,
+                ):
+                    assert grid.top_index(component) == 36
+            grid = grid.from_components(right)
+            for component in right[0]:
+                if component.index in (
+                        23, 24, 27, 31,
+                ):
+                    assert grid.top_index(component) == 0
+                if component.index in (
+                        28, 32,
+                ):
+                    assert grid.top_index(component) == 6
+                if component.index in (
+                        29, 33,
+                ):
+                    assert grid.top_index(component) == 11
+                if component.index in (
+                        30, 34,
+                ):
+                    assert grid.top_index(component) == 13
+                if component.index in (
+                        26,
+                ):
+                    assert grid.top_index(component) == 18
+                if component.index in (
+                        35, 36,
+                ):
+                    assert grid.top_index(component) == 22
+                if component.index in (
+                        37, 40,
+                ):
+                    assert grid.top_index(component) == 24
+                if component.index in (
+                        38, 41,
+                ):
+                    assert grid.top_index(component) == 27
+                if component.index in (
+                        39, 42,
+                ):
+                    assert grid.top_index(component) == 32
+            for component in right[1]:
+                if component.index in (
+                        2, 3,
+                ):
+                    assert grid.top_index(component, 1) == 0
+
+
 def test_extract_playtime_percentage():
     for gamekey in gamekeys:
         with open(path_to_pdf(gamekey)) as pdf_file:
