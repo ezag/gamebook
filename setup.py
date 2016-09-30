@@ -25,4 +25,9 @@ setup(
     tests_require=(
         'pytest',
     ),
+    entry_points = dict(
+        console_scripts=(
+            'gb-pdf-to-csv = gamebook:pdf_to_csv',
+        ),
+    ),
 )
