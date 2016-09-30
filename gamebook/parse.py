@@ -149,11 +149,6 @@ class GamebookParser(object):
             self._playtime_percentage_pages if with_page_nums else
             [page for _, page in self._playtime_percentage_pages])
 
-    def extract_teams(self):
-        pages = self.playtime_percentage_pages()
-        page = list(pages[0])
-        return tuple(page[i].get_text().strip() for i in (2, 3))
-
     def split_teams(self):
         pages = self.playtime_percentage_pages()
         left_all, right_all, rest_all = [], [], []

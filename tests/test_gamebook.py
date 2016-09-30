@@ -10,7 +10,7 @@ gamekeys = (
 )
 
 gamekeys_percentage_pages = (
-    ('56505', [17, 18]),
+    ('56505', [17, 18], ),
     ('56918', [20, 21]),
 )
 
@@ -28,13 +28,6 @@ def test_playtime_percentage_pages():
             assert [page_num for page_num, _ in pages] == percentage_pages
             for _, layout in pages:
                 assert isinstance(layout, LTPage)
-
-
-def test_extract_teams():
-    for gamekey in gamekeys:
-        with open(path_to_pdf(gamekey)) as pdf_file:
-            assert GamebookParser(pdf_file).extract_teams() == (
-                'Green Bay Packers', 'Chicago Bears')
 
 
 def test_split_teams():
