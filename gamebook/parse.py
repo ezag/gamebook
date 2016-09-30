@@ -107,7 +107,8 @@ class Grid(object):
         return column
 
     def top_index(self, component, page_num=0):
-        return (self.y_0[page_num] - component.y1) // self.y_delta[page_num]
+        return int(
+            (self.y_0[page_num] - component.y1) // self.y_delta[page_num])
 
 
 class GamebookParser(object):
@@ -202,59 +203,91 @@ class GamebookParser(object):
                 component_type = ComponentType.player_column
         return component_type
 
-    def extract_playtime_percentage(self):  # pylint: disable=too-many-locals
-        pages = map(list, self.playtime_percentage_pages())
-        left_team, right_team = self.extract_teams()
-        left_player_name_column = pages[0][43].get_text().split('\n')
-        #right_player_name_column = pages[0][22].get_text().split('\n')  # XXX
-        left_position_column = pages[0][10].get_text().split('\n')
-        #right_position_column = pages[0][25].get_text().split('\n')  # XXX
-        left_off_snaps_column = map(int, pages[0][8].get_text().strip('\n').split('\n'))
-        left_off_snaps_column += [0] * (
-            len(left_player_name_column) - len(left_off_snaps_column))
-        left_off_pct_column = [
-            int(n.rstrip('%')) for n in pages[0][9].get_text().strip('\n').split('\n')]
-        left_off_pct_column += [0] * (
-            len(left_player_name_column) - len(left_off_pct_column))
-        def_snaps_pct = pages[0][11].get_text().strip('\n').split('\n')
-        def_snaps_pct[-2:] = [' '.join(def_snaps_pct[-2:])]
-        left_def_snaps_column, left_def_pct_column = zip(*[
-            row.split(' ') for row in def_snaps_pct])
-        left_def_snaps_column = [0] * 18 + map(int, left_def_snaps_column)
-        left_def_snaps_column += [0] * (
-            len(left_player_name_column) - len(left_def_snaps_column))
-        left_def_pct_column = [0] * 18 + [
-            int(n.rstrip('%')) for n in left_def_pct_column]
-        left_def_pct_column += [0] * (
-            len(left_player_name_column) - len(left_def_pct_column))
-        left_spt_snaps_column = (
-            map(int, pages[0][12].get_text().strip('\n').split('\n')) +
-            [0] * 3 +
-            map(int, pages[0][14].get_text().strip('\n').split('\n')) +
-            [0] * 3 +
-            map(int, pages[0][16].get_text().strip('\n').split('\n')) +
-            [0] * 1 +
-            map(int, pages[0][17].get_text().strip('\n').split('\n')) +
-            [0] * 2 +
-            map(int, pages[0][18].get_text().strip('\n').split('\n')))
-        left_spt_pct_column = (
-            [int(n.rstrip('%')) for n in pages[0][13].get_text().strip('\n').split('\n')] +
-            [0] * 3 +
-            [int(n.rstrip('%')) for n in pages[0][15].get_text().strip('\n').split('\n')] +
-            [0] * 3 +
-            [int(n.rstrip('%')) for n in pages[0][19].get_text().strip('\n').split('\n')] +
-            [0] * 1 +
-            [int(n.rstrip('%')) for n in pages[0][20].get_text().strip('\n').split('\n')] +
-            [0] * 2 +
-            [int(n.rstrip('%')) for n in pages[0][21].get_text().strip('\n').split('\n')])
-        return (left_team, zip(
-            left_player_name_column,
-            left_position_column,
-            left_off_snaps_column,
-            left_off_pct_column,
-            left_def_snaps_column,
-            left_def_pct_column,
-            left_spt_snaps_column,
-            left_spt_pct_column,
-        )), (right_team, [
-            ])
+    @classmethod
+    def extract_playtime_percentage_team(cls, components):
+        grid = Grid.from_components(components)
+        player_name_column = []
+        position_column = []
+        off_snaps_column = []
+        off_pct_column = []
+        def_snaps_column = []
+        def_pct_column = []
+        spt_snaps_column = []
+        spt_pct_column = []
+        team_name = None
+        for i, page in enumerate(components):
+            first_row = len(player_name_column)
+            for component in page:
+                text = component.get_text().strip()
+                component_type = GamebookParser.type_from_text(text)
+                if component_type == ComponentType.team_name:
+                    team_name = text
+                elif component_type == ComponentType.player_column:
+                    player_name_column.extend(text.split('\n'))
+                elif component_type == ComponentType.position_column:
+                    position_column.extend(text.split('\n'))
+                elif component_type in (
+                        ComponentType.numeric_column,
+                        ComponentType.percentage_column,
+                        ComponentType.dual_column,
+                ):
+                    numeric_column, percentage_column = {
+                        Column.offense: (off_snaps_column, off_pct_column),
+                        Column.defense: (def_snaps_column, def_pct_column),
+                        Column.special_teams: (
+                            spt_snaps_column, spt_pct_column),
+                    }[grid.column_for(component)]
+                    top_index = grid.top_index(component)
+                    if component_type == ComponentType.numeric_column:
+                        numeric_column.extend(
+                            [0] * (top_index - len(numeric_column)))
+                        numeric_column.extend(map(int, text.split('\n')))
+                    elif component_type == ComponentType.percentage_column:
+                        percentage_column.extend(
+                            [0] * (top_index - len(percentage_column)))
+                        percentage_column.extend([
+                            int(row.rstrip('%'))
+                            for row in text.split('\n')])
+                    elif component_type == ComponentType.dual_column:
+                        numeric_column.extend(
+                            [0] * (top_index - len(numeric_column)))
+                        percentage_column.extend(
+                            [0] * (top_index - len(percentage_column)))
+                        splitted = text.split()
+                        numeric = splitted[::2]
+                        percentage = splitted[1::2]
+                        for i in range(len(numeric)):
+                            if numeric[i].endswith('%'):
+                                numeric[i], percentage[i] = (
+                                    percentage[i], numeric[i])
+                        numeric_column.extend(map(int, numeric))
+                        percentage_column.extend([
+                            int(row.rstrip('%')) for row in percentage])
+        for column in (
+                off_snaps_column,
+                off_pct_column,
+                def_snaps_column,
+                def_pct_column,
+                spt_snaps_column,
+                spt_pct_column,
+        ):
+            column.extend(
+                [0] * (len(player_name_column) - len(column)))
+        return (
+            team_name,
+            zip(
+                player_name_column,
+                position_column,
+                off_snaps_column,
+                off_pct_column,
+                def_snaps_column,
+                def_pct_column,
+                spt_snaps_column,
+                spt_pct_column,
+            ))
+
+    def extract_playtime_percentage(self):
+        left, right, _ = self.split_teams()
+        return (
+            self.extract_playtime_percentage_team(left),
+            self.extract_playtime_percentage_team(right))
