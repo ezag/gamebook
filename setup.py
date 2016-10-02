@@ -19,6 +19,7 @@ setup(
     python_requires='>=2.7,<3',
     install_requires=(
         'enum34',
+        'lxml',
         'pdfminer',
     ),
     setup_requires=[] + pytest_runner + setuptools_lint,

@@ -1,30 +1,46 @@
+import urllib2
+import os.path
+
 from gamebook.player import Player
 
 
+def path_to_xml(gamekey):
+    return os.path.join(
+        os.path.dirname(os.path.realpath(__file__)),
+        'xml',
+        '{}.xml'.format(gamekey))
+
+
 def test_gsis_id():
-    assert Player.gsis_id(gamekey, 'J Sitton') == '00-0026275'
-    assert Player.gsis_id(gamekey, 'T Lang') == '00-0027078'
-    assert Player.gsis_id(gamekey, 'B Bulaga') == '00-0027875'
-    assert Player.gsis_id(gamekey, 'A Rodgers') == '00-0023459'
-    assert Player.gsis_id(gamekey, 'D Bakhtiari') == '00-0030074'
-    assert Player.gsis_id(gamekey, 'J Bushrod') == '00-0025512'
-    assert Player.gsis_id(gamekey, 'M Slauson') == '00-0026500'
-    assert Player.gsis_id(gamekey, 'V Ducasse') == '00-0027667'
-    assert Player.gsis_id(gamekey, 'K Long') == '00-0030441'
-    assert Player.gsis_id(gamekey, 'J Cutler') == '00-0024226'
+    assert Player.gsis_id('56505', 'J Sitton') == '00-0026275'
+    assert Player.gsis_id('56505', 'T Lang') == '00-0027078'
+    assert Player.gsis_id('56505', 'B Bulaga') == '00-0027875'
+    assert Player.gsis_id('56505', 'A Rodgers') == '00-0023459'
+    assert Player.gsis_id('56505', 'D Bakhtiari') == '00-0030074'
+    assert Player.gsis_id('56505', 'J Bushrod') == '00-0025512'
+    assert Player.gsis_id('56505', 'M Slauson') == '00-0026500'
+    assert Player.gsis_id('56505', 'V Ducasse') == '00-0027667'
+    assert Player.gsis_id('56505', 'K Long') == '00-0030441'
+    assert Player.gsis_id('56505', 'J Cutler') == '00-0024226'
 
 
-def test_full_name():
-    assert Player.full_name(gamekey, 'J Sitton') == ('Josh', 'Sitton')
-    assert Player.full_name(gamekey, 'T Lang') == ('T.J.', 'Lang')
-    assert Player.full_name(gamekey, 'B Bulaga') == ('Bryan', 'Bulaga')
-    assert Player.full_name(gamekey, 'A Rodgers') == ('Aaron', 'Rodgers')
-    assert Player.full_name(gamekey, 'D Bakhtiari') == ('David', 'Bakhtiari')
-    assert Player.full_name(gamekey, 'J Bushrod') == ('Jermon', 'Bushrod')
-    assert Player.full_name(gamekey, 'M Slauson') == ('Matt', 'Slauson')
-    assert Player.full_name(gamekey, 'V Ducasse') == ('Vladimir', 'Ducasse')
-    assert Player.full_name(gamekey, 'K Long') == ('Kyle', 'Long')
-    assert Player.full_name(gamekey, 'J Cutler') == ('Jay', 'Cutler')
+def test_full_name(monkeypatch):
+
+    def mockreturn(url):
+        return open(path_to_xml('56505'))
+
+    monkeypatch.setattr(urllib2, 'urlopen', mockreturn)
+
+    assert Player.full_name('56505', 'J Sitton') == ('Josh', 'Sitton')
+    assert Player.full_name('56505', 'T Lang') == ('T.J.', 'Lang')
+    assert Player.full_name('56505', 'B Bulaga') == ('Bryan', 'Bulaga')
+    assert Player.full_name('56505', 'A Rodgers') == ('Aaron', 'Rodgers')
+    assert Player.full_name('56505', 'D Bakhtiari') == ('David', 'Bakhtiari')
+    assert Player.full_name('56505', 'J Bushrod') == ('Jermon', 'Bushrod')
+    assert Player.full_name('56505', 'M Slauson') == ('Matt', 'Slauson')
+    assert Player.full_name('56505', 'V Ducasse') == ('Vladimir', 'Ducasse')
+    assert Player.full_name('56505', 'K Long') == ('Kyle', 'Long')
+    assert Player.full_name('56505', 'J Cutler') == ('Jay', 'Cutler')
 
 
 def test_profile_url():
