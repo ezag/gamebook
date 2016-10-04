@@ -11,6 +11,20 @@ class Player(object):
     def gsis_id(cls, game_url, short_name):
         full_name = cls.full_name(game_url, short_name)
         profile_url = cls.profile_url(*full_name)
+        return cls.gsis_id_from_profile_url(profile_url)
+
+    @classmethod
+    def gsis_ids(cls, game_url, short_names):
+        full_names = cls.full_names(game_url, short_names)
+        profile_urls = [
+            cls.profile_url(*full_name)
+            for full_name in full_names]
+        return [
+            cls.gsis_id_from_profile_url(profile_url)
+            for profile_url in profile_urls]
+
+    @classmethod
+    def gsis_id_from_profile_url(cls, profile_url):
         response = urllib2.urlopen(profile_url)
         parser = etree.HTMLParser()
         tree = etree.parse(response, parser)

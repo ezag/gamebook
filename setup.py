@@ -30,6 +30,7 @@ setup(
     entry_points = dict(
         console_scripts=(
             'gb-pdf-to-csv = gamebook:pdf_to_csv',
+            'gb-url-to-csv = gamebook:url_to_csv',
         ),
     ),
 )

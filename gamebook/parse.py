@@ -270,7 +270,7 @@ class GamebookParser(object):
                 [0] * (len(player_name_column) - len(column)))
         return (
             team_name,
-            zip(
+            [PlaytimePercentage(*row) for row in zip(
                 player_name_column,
                 position_column,
                 off_snaps_column,
@@ -279,7 +279,7 @@ class GamebookParser(object):
                 def_pct_column,
                 spt_snaps_column,
                 spt_pct_column,
-            ))
+            )])
 
     def extract_playtime_percentage(self):
         left, right, _ = self.split_teams()
