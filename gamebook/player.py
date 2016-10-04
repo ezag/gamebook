@@ -8,8 +8,8 @@ from lxml import etree
 class Player(object):
 
     @classmethod
-    def gsis_id(cls, gamekey, short_name):
-        full_name = cls.full_name(gamekey, short_name)
+    def gsis_id(cls, game_url, short_name):
+        full_name = cls.full_name(game_url, short_name)
         profile_url = cls.profile_url(*full_name)
         response = urllib2.urlopen(profile_url)
         parser = etree.HTMLParser()
@@ -24,9 +24,9 @@ class Player(object):
         return gsis_id
 
     @classmethod
-    def full_name(cls, gamekey, short_name):
+    def full_name(cls, game_url, short_name):
         parser = etree.XMLParser()
-        url = 'http://www.nflgsis.com/2015/reg/01/56505/Gamebook.xml'
+        url = '.'.join((game_url.rsplit('.', 1)[0], 'xml'))
         response = urllib2.urlopen(url)
         tree = etree.parse(response, parser)
         players = dict(

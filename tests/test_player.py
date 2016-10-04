@@ -5,11 +5,11 @@ import os.path
 from gamebook.player import Player
 
 
-def path_to_xml(gamekey):
+def path_to_xml(game_url):
     return os.path.join(
         os.path.dirname(os.path.realpath(__file__)),
         'xml',
-        '{}.xml'.format(gamekey))
+        '{}.xml'.format(game_url))
 
 
 def path_to_search(name):
@@ -54,30 +54,32 @@ def mock_urlopen(url):
 
 def test_gsis_id(monkeypatch):
     monkeypatch.setattr(urllib2, 'urlopen', mock_urlopen)
-    assert Player.gsis_id('56505', 'J Sitton') == '00-0026275'
-    assert Player.gsis_id('56505', 'T Lang') == '00-0027078'
-    assert Player.gsis_id('56505', 'B Bulaga') == '00-0027875'
-    assert Player.gsis_id('56505', 'A Rodgers') == '00-0023459'
-    assert Player.gsis_id('56505', 'D Bakhtiari') == '00-0030074'
-    assert Player.gsis_id('56505', 'J Bushrod') == '00-0025512'
-    assert Player.gsis_id('56505', 'M Slauson') == '00-0026500'
-    assert Player.gsis_id('56505', 'V Ducasse') == '00-0027667'
-    assert Player.gsis_id('56505', 'K Long') == '00-0030441'
-    assert Player.gsis_id('56505', 'J Cutler') == '00-0024226'
+    game_url = 'http://www.nflgsis.com/2015/reg/01/56505/Gamebook.pdf'
+    assert Player.gsis_id(game_url, 'J Sitton') == '00-0026275'
+    assert Player.gsis_id(game_url, 'T Lang') == '00-0027078'
+    assert Player.gsis_id(game_url, 'B Bulaga') == '00-0027875'
+    assert Player.gsis_id(game_url, 'A Rodgers') == '00-0023459'
+    assert Player.gsis_id(game_url, 'D Bakhtiari') == '00-0030074'
+    assert Player.gsis_id(game_url, 'J Bushrod') == '00-0025512'
+    assert Player.gsis_id(game_url, 'M Slauson') == '00-0026500'
+    assert Player.gsis_id(game_url, 'V Ducasse') == '00-0027667'
+    assert Player.gsis_id(game_url, 'K Long') == '00-0030441'
+    assert Player.gsis_id(game_url, 'J Cutler') == '00-0024226'
 
 
 def test_full_name(monkeypatch):
     monkeypatch.setattr(urllib2, 'urlopen', mock_urlopen)
-    assert Player.full_name('56505', 'J Sitton') == ('Josh', 'Sitton')
-    assert Player.full_name('56505', 'T Lang') == ('T.J.', 'Lang')
-    assert Player.full_name('56505', 'B Bulaga') == ('Bryan', 'Bulaga')
-    assert Player.full_name('56505', 'A Rodgers') == ('Aaron', 'Rodgers')
-    assert Player.full_name('56505', 'D Bakhtiari') == ('David', 'Bakhtiari')
-    assert Player.full_name('56505', 'J Bushrod') == ('Jermon', 'Bushrod')
-    assert Player.full_name('56505', 'M Slauson') == ('Matt', 'Slauson')
-    assert Player.full_name('56505', 'V Ducasse') == ('Vladimir', 'Ducasse')
-    assert Player.full_name('56505', 'K Long') == ('Kyle', 'Long')
-    assert Player.full_name('56505', 'J Cutler') == ('Jay', 'Cutler')
+    game_url = 'http://www.nflgsis.com/2015/reg/01/56505/Gamebook.pdf'
+    assert Player.full_name(game_url, 'J Sitton') == ('Josh', 'Sitton')
+    assert Player.full_name(game_url, 'T Lang') == ('T.J.', 'Lang')
+    assert Player.full_name(game_url, 'B Bulaga') == ('Bryan', 'Bulaga')
+    assert Player.full_name(game_url, 'A Rodgers') == ('Aaron', 'Rodgers')
+    assert Player.full_name(game_url, 'D Bakhtiari') == ('David', 'Bakhtiari')
+    assert Player.full_name(game_url, 'J Bushrod') == ('Jermon', 'Bushrod')
+    assert Player.full_name(game_url, 'M Slauson') == ('Matt', 'Slauson')
+    assert Player.full_name(game_url, 'V Ducasse') == ('Vladimir', 'Ducasse')
+    assert Player.full_name(game_url, 'K Long') == ('Kyle', 'Long')
+    assert Player.full_name(game_url, 'J Cutler') == ('Jay', 'Cutler')
 
 
 def test_profile_url(monkeypatch):
