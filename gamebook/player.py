@@ -24,7 +24,7 @@ class Player(object):
         return gsis_id
 
     @classmethod
-    def full_name(cls, game_url, short_name):
+    def full_names(cls, game_url, short_names):
         parser = etree.XMLParser()
         url = '.'.join((game_url.rsplit('.', 1)[0], 'xml'))
         response = urllib2.urlopen(url)
@@ -48,7 +48,14 @@ class Player(object):
                     'NotActiveVisitor',
         )))))
         response.close()
-        return players[short_name.replace(' ', '.')]
+        return [
+            players[short_name.replace(' ', '.')]
+            for short_name in short_names
+        ]
+
+    @classmethod
+    def full_name(cls, game_url, short_name):
+        return cls.full_names(game_url, [short_name])[0]
 
     @classmethod
     def profile_url(cls, first_name, last_name):
