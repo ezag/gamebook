@@ -1,5 +1,8 @@
+from __future__ import print_function
+
 from urllib import urlencode
 import json
+import sys
 import urllib2
 
 from lxml import etree
@@ -25,6 +28,7 @@ class Player(object):
 
     @classmethod
     def gsis_id_from_profile_url(cls, profile_url):
+        print('GSIS ID from {}...'.format(profile_url), file=sys.stderr)
         response = urllib2.urlopen(profile_url)
         parser = etree.HTMLParser()
         tree = etree.parse(response, parser)
@@ -35,6 +39,7 @@ class Player(object):
             for line in comment.split('\n')
             if line.strip().startswith('GSIS ID:')
         ][0]
+        print('...found: {}'.format(gsis_id), file=sys.stderr)
         return gsis_id
 
     @classmethod
@@ -73,6 +78,7 @@ class Player(object):
 
     @classmethod
     def profile_url(cls, first_name, last_name):
+        print('Profile URL for {} {}...'.format(first_name, last_name), file=sys.stderr)
         url = 'http://search.nfl.com/search?{}'.format(
             urlencode(dict(query=' '.join((first_name, last_name)))))
         parser = etree.HTMLParser()
@@ -83,8 +89,10 @@ class Player(object):
             assert len(profile_url) == 1
             profile_url = profile_url[0]
         else:
+            print('...falling back to Google...', file=sys.stderr)
             profile_url = cls.profile_url_via_google(first_name, last_name)
         response.close()
+        print('...found: {}'.format(profile_url), file=sys.stderr)
         return profile_url
 
     @classmethod
