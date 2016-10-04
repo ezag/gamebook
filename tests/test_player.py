@@ -1,3 +1,4 @@
+from urlparse import parse_qs, urlparse
 import urllib2
 import os.path
 
@@ -51,18 +52,27 @@ def test_full_name(monkeypatch):
     assert Player.full_name('56505', 'J Cutler') == ('Jay', 'Cutler')
 
 
-def test_profile_url():
+def test_profile_url(monkeypatch):
 
     def url(slug, id_):
+        return 'http://www.nfl.com/players/{}/profile?id={}'.format(slug, id_)
+
+    def urlnew(slug, id_):
         return 'http://www.nfl.com/player/{}/{}/profile'.format(slug, id_)
 
-    assert Player.profile_url('Josh', 'Sitton') == url('joshsitton', '4485')
-    assert Player.profile_url('T.J.', 'Lang') == url('t.j.lang', '89746')
-    assert Player.profile_url('Bryan', 'Bulaga') == url('bryanbulaga', '496988')
-    assert Player.profile_url('Aaron', 'Rodgers') == url('aaronrodgers', '2506363')
-    assert Player.profile_url('David', 'Bakhtiari') == url('davidbakhtiari', '2540183')
-    assert Player.profile_url('Jermon', 'Bushrod') == url('jermonbushrod', '2507203')
-    assert Player.profile_url('Matt', 'Slauson') == url('mattslauson' '81871')
-    assert Player.profile_url('Vladimir', 'Ducasse') == url('vladimirducasse', '2508044')
-    assert Player.profile_url('Kyle', 'Long') == url('kylelong', '2539933')
-    assert Player.profile_url('Jay', 'Cutler') == url('jaycutler', '2495824')
+    def mockreturn(url):
+        return open(path_to_search(parse_qs(urlparse(url).query
+        )['query'][0].replace('.', '').replace(' ', '-').lower()))
+
+    monkeypatch.setattr(urllib2, 'urlopen', mockreturn)
+
+    assert Player.profile_url('Josh', 'Sitton') == url('JoshSitton', 'SIT702706')
+    assert Player.profile_url('T.J.', 'Lang') == url('T.J.Lang', 'LAN483492')
+    assert Player.profile_url('Bryan', 'Bulaga') == url('BryanBulaga', 'BUL062007')
+    assert Player.profile_url('Aaron', 'Rodgers') == url('AaronRodgers', 'ROD339293')
+    assert Player.profile_url('David', 'Bakhtiari') == url('DavidBakhtiari', 'BAK787653')
+    assert Player.profile_url('Jermon', 'Bushrod') == url('JermonBushrod', 'BUS379552')
+    assert Player.profile_url('Matt', 'Slauson') == url('MattSlauson', 'SLA733242')
+    assert Player.profile_url('Vladimir', 'Ducasse') == urlnew('vladimirducasse', '2508044')
+    assert Player.profile_url('Kyle', 'Long') == url('KyleLong', 'LON395646')
+    assert Player.profile_url('Jay', 'Cutler') == url('JayCutler', 'CUT288111')
