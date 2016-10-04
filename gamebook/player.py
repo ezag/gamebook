@@ -1,4 +1,5 @@
 from urllib import urlencode
+import json
 import urllib2
 
 from lxml import etree
@@ -55,5 +56,16 @@ class Player(object):
 
     @classmethod
     def profile_url_via_google(cls, first_name, last_name):
-        if (first_name, last_name) == ('Vladimir', 'Ducasse'):
-            return 'http://www.nfl.com/player/vladimirducasse/2508044/profile'
+        # http://stackoverflow.com/a/11206266/443594
+        url = 'https://www.googleapis.com/customsearch/v1?{}'.format(urlencode(dict(
+            key='AIzaSyDdz3sni-hy81oqHN38-NNdvyc9E8GOTRk',
+            cx='008652676468622773486:v3ihrvnf_xi',
+            q='inurl:{}{} inurl:profile'.format(
+                first_name.lower(),
+                last_name.lower(),
+            ),
+        )))
+        response = urllib2.urlopen(url)
+        results = json.load(response)
+        response.close()
+        return results['items'][0]['link']

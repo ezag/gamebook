@@ -20,6 +20,13 @@ def path_to_search(name):
         '{}.html'.format(name.lower().replace(' ', '-')))
 
 
+def path_to_json(name):
+    return os.path.join(
+        os.path.dirname(os.path.realpath(__file__)),
+        'json',
+        '{}.json'.format(name))
+
+
 def test_gsis_id():
     assert Player.gsis_id('56505', 'J Sitton') == '00-0026275'
     assert Player.gsis_id('56505', 'T Lang') == '00-0027078'
@@ -61,8 +68,13 @@ def test_profile_url(monkeypatch):
         return 'http://www.nfl.com/player/{}/{}/profile'.format(slug, id_)
 
     def mockreturn(url):
-        return open(path_to_search(parse_qs(urlparse(url).query
-        )['query'][0].replace('.', '').replace(' ', '-').lower()))
+        parsed_url = urlparse(url)
+        query = parse_qs(parsed_url.query)
+        if 'query' in query:
+            return open(path_to_search(
+                query['query'][0].replace('.', '').replace(' ', '-').lower()))
+        elif 'q' in query:
+            return open(path_to_json('vladimir-ducasse'))
 
     monkeypatch.setattr(urllib2, 'urlopen', mockreturn)
 

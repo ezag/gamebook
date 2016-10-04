@@ -1,0 +1,74 @@
+{
+ "kind": "customsearch#search",
+ "url": {
+  "type": "application/json",
+  "template": "https://www.googleapis.com/customsearch/v1?q={searchTerms}&num={count?}&start={startIndex?}&lr={language?}&safe={safe?}&cx={cx?}&cref={cref?}&sort={sort?}&filter={filter?}&gl={gl?}&cr={cr?}&googlehost={googleHost?}&c2coff={disableCnTwTranslation?}&hq={hq?}&hl={hl?}&siteSearch={siteSearch?}&siteSearchFilter={siteSearchFilter?}&exactTerms={exactTerms?}&excludeTerms={excludeTerms?}&linkSite={linkSite?}&orTerms={orTerms?}&relatedSite={relatedSite?}&dateRestrict={dateRestrict?}&lowRange={lowRange?}&highRange={highRange?}&searchType={searchType}&fileType={fileType?}&rights={rights?}&imgSize={imgSize?}&imgType={imgType?}&imgColorType={imgColorType?}&imgDominantColor={imgDominantColor?}&alt=json"
+ },
+ "queries": {
+  "request": [
+   {
+    "title": "Google Custom Search - inurl:vladimirducasse inurl:profile",
+    "totalResults": "1",
+    "searchTerms": "inurl:vladimirducasse inurl:profile",
+    "count": 1,
+    "startIndex": 1,
+    "inputEncoding": "utf8",
+    "outputEncoding": "utf8",
+    "safe": "off",
+    "cx": "008652676468622773486:v3ihrvnf_xi"
+   }
+  ]
+ },
+ "context": {
+  "title": "gamebook"
+ },
+ "searchInformation": {
+  "searchTime": 0.317288,
+  "formattedSearchTime": "0.32",
+  "totalResults": "1",
+  "formattedTotalResults": "1"
+ },
+ "items": [
+  {
+   "kind": "customsearch#result",
+   "title": "Vladimir Ducasse, OT for the Baltimore Ravens at NFL.com",
+   "htmlTitle": "Vladimir Ducasse, OT for the Baltimore Ravens at NFL.com",
+   "link": "http://www.nfl.com/player/vladimirducasse/2508044/profile",
+   "displayLink": "www.nfl.com",
+   "snippet": "Career Stats more. Season, Team, G, GS. 2015, Chicago Bears, 16, 11. 2014, \nMinnesota Vikings, 13, 6. 2013, New York Jets, 16, 4. 2012, New York Jets, 16, 0.",
+   "htmlSnippet": "Career Stats more. Season, Team, G, GS. 2015, Chicago Bears, 16, 11. 2014, \u003cbr\u003e\nMinnesota Vikings, 13, 6. 2013, New York Jets, 16, 4. 2012, New York Jets, 16, 0.",
+   "cacheId": "JECsfQp5qeYJ",
+   "formattedUrl": "www.nfl.com/player/vladimirducasse/2508044/profile",
+   "htmlFormattedUrl": "www.nfl.com/player/\u003cb\u003evladimirducasse\u003c/b\u003e/2508044/\u003cb\u003eprofile\u003c/b\u003e",
+   "pagemap": {
+    "cse_thumbnail": [
+     {
+      "width": "61",
+      "height": "85",
+      "src": "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQqzJd9l8MYQLfbdyQycyc_wEt0SKbERBEHCM1hqh9PdeNXMZXzT8wy"
+     }
+    ],
+    "metatags": [
+     {
+      "viewport": "width=1024",
+      "yuiversion": "3.10.3",
+      "twitter:site": "@NFL",
+      "fb:app_id": "108273802559405",
+      "og:title": "Vladimir Ducasse",
+      "og:image": "http://static.nfl.com/static/content/public/static/img/getty/headshot/D/U/C/DUC019774.jpg",
+      "og:url": "http://www.nfl.com/players/vladimirducasse/profile?id=DUC019774",
+      "og:site_name": "NFL.com",
+      "og:type": "athlete",
+      "prototypejs": "true",
+      "decorator": "default-yui"
+     }
+    ],
+    "cse_image": [
+     {
+      "src": "http://static.nfl.com/static/content/public/static/img/getty/headshot/D/U/C/DUC019774.jpg"
+     }
+    ]
+   }
+  }
+ ]
+}
