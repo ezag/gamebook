@@ -55,7 +55,6 @@ def url_to_csv():
         player_names = [row.player_name for row in data]
         players_gsis_ids = Player.gsis_ids(url, player_names)
         for row, gsis_id in zip(data, players_gsis_ids):
-            print type(row)
             csvrow = (
                 team_name,
                 gsis_id,
