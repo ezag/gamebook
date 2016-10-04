@@ -9,7 +9,19 @@ class Player(object):
 
     @classmethod
     def gsis_id(cls, gamekey, short_name):
-        pass
+        full_name = cls.full_name(gamekey, short_name)
+        profile_url = cls.profile_url(*full_name)
+        response = urllib2.urlopen(profile_url)
+        parser = etree.HTMLParser()
+        tree = etree.parse(response, parser)
+        response.close()
+        comment = tree.xpath('//comment()[contains(., "GSIS")]')[0].text
+        gsis_id = [
+            line.strip().split()[-1]
+            for line in comment.split('\n')
+            if line.strip().startswith('GSIS ID:')
+        ][0]
+        return gsis_id
 
     @classmethod
     def full_name(cls, gamekey, short_name):

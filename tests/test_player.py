@@ -20,6 +20,14 @@ def path_to_search(name):
         '{}.html'.format(name.replace('.', '').replace(' ', '-').lower()))
 
 
+def path_to_profile(name):
+    return os.path.join(
+        os.path.dirname(os.path.realpath(__file__)),
+        'html',
+        'profile',
+        '{}.html'.format(name))
+
+
 def path_to_json(name):
     return os.path.join(
         os.path.dirname(os.path.realpath(__file__)),
@@ -27,7 +35,25 @@ def path_to_json(name):
         '{}.json'.format(name))
 
 
-def test_gsis_id():
+def mock_urlopen(url):
+    if url.endswith('xml'):
+        filename = path_to_xml('56505')
+    elif url.startswith('https://www.googleapis.com/'):
+        filename = path_to_json('vladimir-ducasse')
+    elif url.startswith('http://search.nfl.com/'):
+        parsed_url = urlparse(url)
+        query = parse_qs(parsed_url.query)
+        filename = path_to_search(query['query'][0])
+    elif url.startswith('http://www.nfl.com/'):
+        name = url.split('/')[4].lower().replace('.', '')
+        filename = path_to_profile(name)
+    else:
+        assert False
+    return open(filename)
+
+
+def test_gsis_id(monkeypatch):
+    monkeypatch.setattr(urllib2, 'urlopen', mock_urlopen)
     assert Player.gsis_id('56505', 'J Sitton') == '00-0026275'
     assert Player.gsis_id('56505', 'T Lang') == '00-0027078'
     assert Player.gsis_id('56505', 'B Bulaga') == '00-0027875'
@@ -41,12 +67,7 @@ def test_gsis_id():
 
 
 def test_full_name(monkeypatch):
-
-    def mockreturn(url):
-        return open(path_to_xml('56505'))
-
-    monkeypatch.setattr(urllib2, 'urlopen', mockreturn)
-
+    monkeypatch.setattr(urllib2, 'urlopen', mock_urlopen)
     assert Player.full_name('56505', 'J Sitton') == ('Josh', 'Sitton')
     assert Player.full_name('56505', 'T Lang') == ('T.J.', 'Lang')
     assert Player.full_name('56505', 'B Bulaga') == ('Bryan', 'Bulaga')
@@ -67,16 +88,7 @@ def test_profile_url(monkeypatch):
     def urlnew(slug, id_):
         return 'http://www.nfl.com/player/{}/{}/profile'.format(slug, id_)
 
-    def mockreturn(url):
-        parsed_url = urlparse(url)
-        query = parse_qs(parsed_url.query)
-        if 'query' in query:
-            return open(path_to_search(query['query'][0]))
-        elif 'q' in query:
-            return open(path_to_json('vladimir-ducasse'))
-
-    monkeypatch.setattr(urllib2, 'urlopen', mockreturn)
-
+    monkeypatch.setattr(urllib2, 'urlopen', mock_urlopen)
     assert Player.profile_url('Josh', 'Sitton') == url('JoshSitton', 'SIT702706')
     assert Player.profile_url('T.J.', 'Lang') == url('T.J.Lang', 'LAN483492')
     assert Player.profile_url('Bryan', 'Bulaga') == url('BryanBulaga', 'BUL062007')
