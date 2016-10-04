@@ -1,3 +1,4 @@
+from urllib import urlencode
 import urllib2
 
 from lxml import etree
@@ -37,5 +38,12 @@ class Player(object):
         return players[short_name.replace(' ', '.')]
 
     @classmethod
-    def profile_url(cls, gamekey, short_name):
-        pass
+    def profile_url(cls, first_name, last_name):
+        url = 'http://search.nfl.com/search?{}'.format(
+            urlencode(dict(query=' '.join((first_name, last_name)))))
+        parser = etree.HTMLParser()
+        response = urllib2.urlopen(url)
+        tree = etree.parse(response, parser)
+        profile_url = tree.xpath('//a[@class="player"]/@href')[0]
+        response.close()
+        return profile_url

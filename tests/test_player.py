@@ -11,6 +11,14 @@ def path_to_xml(gamekey):
         '{}.xml'.format(gamekey))
 
 
+def path_to_search(name):
+    return os.path.join(
+        os.path.dirname(os.path.realpath(__file__)),
+        'html',
+        'search',
+        '{}.html'.format(name.lower().replace(' ', '-')))
+
+
 def test_gsis_id():
     assert Player.gsis_id('56505', 'J Sitton') == '00-0026275'
     assert Player.gsis_id('56505', 'T Lang') == '00-0027078'
