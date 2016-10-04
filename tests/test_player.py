@@ -17,7 +17,7 @@ def path_to_search(name):
         os.path.dirname(os.path.realpath(__file__)),
         'html',
         'search',
-        '{}.html'.format(name.lower().replace(' ', '-')))
+        '{}.html'.format(name.replace('.', '').replace(' ', '-').lower()))
 
 
 def path_to_json(name):
@@ -71,8 +71,7 @@ def test_profile_url(monkeypatch):
         parsed_url = urlparse(url)
         query = parse_qs(parsed_url.query)
         if 'query' in query:
-            return open(path_to_search(
-                query['query'][0].replace('.', '').replace(' ', '-').lower()))
+            return open(path_to_search(query['query'][0]))
         elif 'q' in query:
             return open(path_to_json('vladimir-ducasse'))
 
