@@ -33,10 +33,7 @@ class Player(object):
         if profile_url is None:
             return ''
         print('GSIS ID from {}...'.format(profile_url), file=sys.stderr)
-        response = urllib2.urlopen(profile_url)
-        parser = etree.HTMLParser()
-        tree = etree.parse(response, parser)
-        response.close()
+        tree = cls.get_html(profile_url)
         comment = tree.xpath('//comment()[contains(., "GSIS")]')
         if not comment:
             print('...not found', file=sys.stderr)
@@ -52,10 +49,8 @@ class Player(object):
 
     @classmethod
     def full_names(cls, game_url, short_names):
-        parser = etree.XMLParser()
         url = '.'.join((game_url.rsplit('.', 1)[0], 'xml'))
-        response = urllib2.urlopen(url)
-        tree = etree.parse(response, parser)
+        tree = cls.get_xml(url)
         players = dict(
             (element.xpath('./@Player')[0], (
                 element.xpath('./@NickName')[0],
@@ -74,7 +69,6 @@ class Player(object):
                     'DidNotPlayVisitor',
                     'NotActiveVisitor',
         )))))
-        response.close()
         return [
             players.get(short_name.replace(' ', '.'))
             for short_name in short_names
@@ -89,9 +83,7 @@ class Player(object):
         print('Profile URL for {} {}...'.format(first_name, last_name), file=sys.stderr)
         url = 'http://search.nfl.com/search?{}'.format(
             urlencode(dict(query=' '.join((first_name, last_name)))))
-        parser = etree.HTMLParser()
-        response = urllib2.urlopen(url)
-        tree = etree.parse(response, parser)
+        tree = cls.get_html(url)
         profile_url = tree.xpath('//a[@class="player"]/@href')
         if profile_url:
             assert len(profile_url) == 1
@@ -99,7 +91,6 @@ class Player(object):
         else:
             print('...falling back to Google...', file=sys.stderr)
             profile_url = cls.profile_url_via_google(first_name, last_name)
-        response.close()
         print('...found: {}'.format(profile_url), file=sys.stderr)
         return profile_url
 
@@ -114,10 +105,30 @@ class Player(object):
                 last_name.lower(),
             ),
         )))
-        response = urllib2.urlopen(url)
-        results = json.load(response)
-        response.close()
+        results = cls.get_json(url)
         if 'items' not in results or not results['items']:
             print('...not found', file=sys.stderr)
             return None
         return results['items'][0]['link']
+
+    @classmethod
+    def get_tree(cls, url, parser):
+        response = urllib2.urlopen(url)
+        tree = etree.parse(response, parser)
+        response.close()
+        return tree
+
+    @classmethod
+    def get_html(cls, url):
+        return cls.get_tree(url, etree.HTMLParser())
+
+    @classmethod
+    def get_xml(cls, url):
+        return cls.get_tree(url, etree.XMLParser())
+
+    @classmethod
+    def get_json(cls, url):
+        response = urllib2.urlopen(url)
+        data = json.load(response)
+        response.close()
+        return data
