@@ -41,6 +41,7 @@ def pdf_to_csv():
 
 
 field_names = (
+    'game_id',
     'gamekey',
     'player_id',
     'player_name',
@@ -55,7 +56,7 @@ field_names = (
 )
 
 
-def get_rows(url):
+def get_rows(url, game_id):
     gamekey = url.rsplit('/', 2)[-2]
     response = urllib2.urlopen(url)
     pdf = StringIO(response.read())
@@ -68,6 +69,7 @@ def get_rows(url):
         players_gsis_ids = Player.gsis_ids(url, player_names)
         for row, gsis_id in zip(data, players_gsis_ids):
             yield dict(zip(field_names, (
+                game_id,
                 gamekey,
                 gsis_id,
                 row.player_name,
@@ -84,9 +86,10 @@ def get_rows(url):
 
 def url_to_csv():
     url = sys.argv[1]
+    game_id = sys.argv[2]
     out = csv.writer(sys.stdout)
     out.writerow(field_names)
-    for row in get_rows(url):
+    for row in get_rows(url, game_id):
         out.writerow([row[key] for key in field_names])
 
 
