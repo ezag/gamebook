@@ -6,6 +6,7 @@ import urllib2
 
 from sqlalchemy.engine import create_engine
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy import and_, or_
 
 from .database import metadata, playtime_percentage
 from .parse import GamebookParser
@@ -107,7 +108,18 @@ def url_to_db():
         try:
             conn.execute(playtime_percentage.insert().values(**row))
         except IntegrityError as exc:
-            logger.warning('Ignoring new record %s\n%s', exc.params, exc)
+            result = conn.execute(playtime_percentage.delete().where(
+                or_(
+                    playtime_percentage.c.player_id == row['player_id'],
+                    and_(
+                        playtime_percentage.c.player_name == row['player_name'],
+                        playtime_percentage.c.gamekey == row['gamekey'],
+                ))
+            ))
+            logger.warning(
+                'Deleted %s row(s) for update %s',
+                result.rowcount, row)
+            conn.execute(playtime_percentage.insert().values(**row))
 
 
 def create_table():
