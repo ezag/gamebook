@@ -37,7 +37,8 @@ def path_to_json(name):
 
 def mock_urlopen(url):
     if url.endswith('xml'):
-        filename = path_to_xml('56505')
+        name = url.rsplit('/', 2)[-2]
+        filename = path_to_xml(name)
     elif url.startswith('https://www.googleapis.com/'):
         parsed_url = urlparse(url)
         query = parse_qs(parsed_url.query)
@@ -84,6 +85,12 @@ def test_full_name(monkeypatch):
     assert Player.full_name(game_url, 'V Ducasse') == ('Vladimir', 'Ducasse')
     assert Player.full_name(game_url, 'K Long') == ('Kyle', 'Long')
     assert Player.full_name(game_url, 'J Cutler') == ('Jay', 'Cutler')
+
+
+def test_full_name_multispace(monkeypatch):
+    monkeypatch.setattr(urllib2, 'urlopen', mock_urlopen)
+    game_url = 'http://www.nflgsis.com/2016/REG/04/56953/Gamebook.pdf'
+    assert Player.full_name(game_url, 'K Van Noy') == ('Kyle', 'Van Noy')
 
 
 def test_profile_url(monkeypatch):

@@ -75,7 +75,7 @@ class Player(object):
         )))))
         full_names = []
         for short_name in short_names:
-            full_name = players.get(short_name.replace(' ', '.'))
+            full_name = players.get(short_name.replace(' ', '.', 1))
             if full_name is None:
                 logger.warning(
                     'Missing full name for %s at %s',
