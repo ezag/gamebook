@@ -1,11 +1,18 @@
 from cStringIO import StringIO
 import csv
+import logging
 import sys
 import urllib2
 
 from .parse import GamebookParser
 from .player import Player
 
+
+logging.basicConfig(
+    stream=sys.stderr,
+    level=logging.DEBUG,
+    format='%(asctime)s %(levelname)s - %(message)s',
+)
 
 def pdf_to_csv():
     gb = GamebookParser(sys.stdin)

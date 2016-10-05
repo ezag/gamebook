@@ -1,12 +1,12 @@
-from __future__ import print_function
-
 from urllib import urlencode
 import json
-import sys
+import logging
 import urllib2
 
 from lxml import etree
 
+
+logger = logging.getLogger(__name__)
 
 class Player(object):
 
@@ -32,11 +32,11 @@ class Player(object):
     def gsis_id_from_profile_url(cls, profile_url):
         if profile_url is None:
             return ''
-        print('GSIS ID from {}...'.format(profile_url), file=sys.stderr)
+        logger.info('GSIS ID from %s...', profile_url)
         tree = cls.get_html(profile_url)
         comment = tree.xpath('//comment()[contains(., "GSIS")]')
         if not comment:
-            print('...not found', file=sys.stderr)
+            logger.info('...not found')
             return ''
         comment = comment[0].text
         gsis_id = [
@@ -44,7 +44,7 @@ class Player(object):
             for line in comment.split('\n')
             if line.strip().startswith('GSIS ID:')
         ][0]
-        print('...found: {}'.format(gsis_id), file=sys.stderr)
+        logger.info('...found: %s', gsis_id)
         return gsis_id
 
     @classmethod
@@ -80,7 +80,7 @@ class Player(object):
 
     @classmethod
     def profile_url(cls, first_name, last_name):
-        print('Profile URL for {} {}...'.format(first_name, last_name), file=sys.stderr)
+        logger.info('Profile URL for %s %s...', first_name, last_name)
         url = 'http://search.nfl.com/search?{}'.format(
             urlencode(dict(query=' '.join((first_name, last_name)))))
         tree = cls.get_html(url)
@@ -89,9 +89,9 @@ class Player(object):
             assert len(profile_url) == 1
             profile_url = profile_url[0]
         else:
-            print('...falling back to Google...', file=sys.stderr)
+            logger.info('...falling back to Google...')
             profile_url = cls.profile_url_via_google(first_name, last_name)
-        print('...found: {}'.format(profile_url), file=sys.stderr)
+        logger.info('...found: %s', profile_url)
         return profile_url
 
     @classmethod
@@ -107,7 +107,7 @@ class Player(object):
         )))
         results = cls.get_json(url)
         if 'items' not in results or not results['items']:
-            print('...not found', file=sys.stderr)
+            logger.info('...not found')
             return None
         return results['items'][0]['link']
 
