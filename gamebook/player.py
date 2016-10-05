@@ -37,7 +37,11 @@ class Player(object):
         parser = etree.HTMLParser()
         tree = etree.parse(response, parser)
         response.close()
-        comment = tree.xpath('//comment()[contains(., "GSIS")]')[0].text
+        comment = tree.xpath('//comment()[contains(., "GSIS")]')
+        if not comment:
+            print('...not found', file=sys.stderr)
+            return ''
+        comment = comment[0].text
         gsis_id = [
             line.strip().split()[-1]
             for line in comment.split('\n')

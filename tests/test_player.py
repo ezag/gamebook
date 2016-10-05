@@ -118,3 +118,9 @@ def test_broken_full_name(monkeypatch):
     assert Player.full_name(game_url, 'N Existent') == None
     assert Player.gsis_id(game_url, 'N Existent') == ''
     assert Player.gsis_ids(game_url, ['N Existent', 'J Sitton']) == ['', '00-0026275']
+
+
+def test_broken_gsis_id(monkeypatch):
+    monkeypatch.setattr(urllib2, 'urlopen', mock_urlopen)
+    url = 'http://www.nfl.com/player/brokengsis/test/profile' 
+    assert Player.gsis_id_from_profile_url(url) == ''
