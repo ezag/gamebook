@@ -13,6 +13,8 @@ class Player(object):
     @classmethod
     def gsis_id(cls, game_url, short_name):
         full_name = cls.full_name(game_url, short_name)
+        if full_name is None:
+            return ''
         profile_url = cls.profile_url(*full_name)
         return cls.gsis_id_from_profile_url(profile_url)
 
@@ -20,7 +22,7 @@ class Player(object):
     def gsis_ids(cls, game_url, short_names):
         full_names = cls.full_names(game_url, short_names)
         profile_urls = [
-            cls.profile_url(*full_name)
+            cls.profile_url(*full_name) if full_name is not None else None
             for full_name in full_names]
         return [
             cls.gsis_id_from_profile_url(profile_url)
@@ -28,6 +30,8 @@ class Player(object):
 
     @classmethod
     def gsis_id_from_profile_url(cls, profile_url):
+        if profile_url is None:
+            return ''
         print('GSIS ID from {}...'.format(profile_url), file=sys.stderr)
         response = urllib2.urlopen(profile_url)
         parser = etree.HTMLParser()
@@ -68,7 +72,7 @@ class Player(object):
         )))))
         response.close()
         return [
-            players[short_name.replace(' ', '.')]
+            players.get(short_name.replace(' ', '.'))
             for short_name in short_names
         ]
 
@@ -109,4 +113,7 @@ class Player(object):
         response = urllib2.urlopen(url)
         results = json.load(response)
         response.close()
+        if 'items' not in results or not results['items']:
+            print('...not found', file=sys.stderr)
+            return None
         return results['items'][0]['link']

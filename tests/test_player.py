@@ -39,7 +39,11 @@ def mock_urlopen(url):
     if url.endswith('xml'):
         filename = path_to_xml('56505')
     elif url.startswith('https://www.googleapis.com/'):
-        filename = path_to_json('vladimir-ducasse')
+        parsed_url = urlparse(url)
+        query = parse_qs(parsed_url.query)
+        search_string = query['q'][0]
+        name = search_string.split(' ')[0].split(':')[1]
+        filename = path_to_json(name)
     elif url.startswith('http://search.nfl.com/'):
         parsed_url = urlparse(url)
         query = parse_qs(parsed_url.query)
@@ -101,3 +105,16 @@ def test_profile_url(monkeypatch):
     assert Player.profile_url('Vladimir', 'Ducasse') == urlnew('vladimirducasse', '2508044')
     assert Player.profile_url('Kyle', 'Long') == url('KyleLong', 'LON395646')
     assert Player.profile_url('Jay', 'Cutler') == url('JayCutler', 'CUT288111')
+
+
+def test_broken_profile(monkeypatch):
+    monkeypatch.setattr(urllib2, 'urlopen', mock_urlopen)
+    assert Player.profile_url('Non', 'Existent') is None
+
+
+def test_broken_full_name(monkeypatch):
+    monkeypatch.setattr(urllib2, 'urlopen', mock_urlopen)
+    game_url = 'http://www.nflgsis.com/2015/reg/01/56505/Gamebook.pdf'
+    assert Player.full_name(game_url, 'N Existent') == None
+    assert Player.gsis_id(game_url, 'N Existent') == ''
+    assert Player.gsis_ids(game_url, ['N Existent', 'J Sitton']) == ['', '00-0026275']
