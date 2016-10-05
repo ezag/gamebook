@@ -33,7 +33,11 @@ class Player(object):
         if profile_url is None:
             return ''
         logger.info('GSIS ID from %s...', profile_url)
-        tree = cls.get_html(profile_url)
+        try:
+            tree = cls.get_html(profile_url)
+        except Exception:
+            logger.exception('Failed to get GSIS ID from %s', profile_url)
+            return ''
         comment = tree.xpath('//comment()[contains(., "GSIS")]')
         if not comment:
             logger.warning('Missing GSIS ID at %s', profile_url)
@@ -88,7 +92,13 @@ class Player(object):
         logger.info('Profile URL for %s %s...', first_name, last_name)
         url = 'http://search.nfl.com/search?{}'.format(
             urlencode(dict(query=' '.join((first_name, last_name)))))
-        tree = cls.get_html(url)
+        try:
+            tree = cls.get_html(url)
+        except Exception:
+            logger.exception(
+                'Failed to get profile URL for %s %s from %s',
+                first_name, last_name, url)
+            return None
         profile_url = tree.xpath('//a[@class="player"]/@href')
         if profile_url:
             if len(profile_url) > 1:
@@ -113,7 +123,13 @@ class Player(object):
                 last_name.lower(),
             ),
         )))
-        results = cls.get_json(url)
+        try:
+            results = cls.get_json(url)
+        except Exception:
+            logger.exception(
+                'Failed to get profile URL for %s %s from %s',
+                first_name, last_name, url)
+            return None
         if 'items' not in results or not results['items']:
             logger.warning('Missing profile for %s %s', first_name, last_name)
             return None
