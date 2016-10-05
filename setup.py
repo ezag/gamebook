@@ -33,6 +33,7 @@ setup(
             'gb-pdf-to-csv = gamebook:pdf_to_csv',
             'gb-url-to-csv = gamebook:url_to_csv',
             'gb-create-table = gamebook:create_table',
+            'gb-url-to-db = gamebook:url_to_db',
         ),
     ),
 )

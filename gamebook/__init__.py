@@ -5,8 +5,9 @@ import sys
 import urllib2
 
 from sqlalchemy.engine import create_engine
+from sqlalchemy.exc import IntegrityError
 
-from .database import metadata
+from .database import metadata, playtime_percentage
 from .parse import GamebookParser
 from .player import Player
 
@@ -16,6 +17,7 @@ logging.basicConfig(
     level=logging.DEBUG,
     format='%(asctime)s %(levelname)s - %(message)s',
 )
+logger = logging.getLogger(__name__)
 
 def pdf_to_csv():
     gb = GamebookParser(sys.stdin)
@@ -91,6 +93,21 @@ def url_to_csv():
     out.writerow(field_names)
     for row in get_rows(url, game_id):
         out.writerow([row[key] for key in field_names])
+
+
+def url_to_db():
+    url = sys.argv[1]
+    game_id = sys.argv[2]
+    db_uri = sys.argv[3]
+    engine = create_engine(db_uri)
+    conn = engine.connect()
+    for row in get_rows(url, game_id):
+        if not row['player_id']:
+            row['player_id'] = None
+        try:
+            conn.execute(playtime_percentage.insert().values(**row))
+        except IntegrityError as exc:
+            logger.warning('Ignoring new record %s\n%s', exc.params, exc)
 
 
 def create_table():

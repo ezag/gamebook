@@ -29,3 +29,9 @@ Create SQL table:
 .. code-block:: bash
 
     gb-create-table postgres://zag@localhost/gamebook
+
+Store data in database:
+
+.. code-block:: bash
+
+    gb-url-to-db http://www.nflgsis.com/2016/REG/04/56952/Gamebook.pdf 56952 postgres://zag@localhost/gamebook
