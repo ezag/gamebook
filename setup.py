@@ -21,6 +21,7 @@ setup(
         'enum34',
         'lxml',
         'pdfminer',
+        'sqlalchemy',
     ),
     setup_requires=[] + pytest_runner + setuptools_lint,
     tests_require=(
