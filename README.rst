@@ -23,3 +23,9 @@ Convert PDF to CSV:
 
     gb-pdf-to-csv < tests/pdf/56505.pdf > 56505.csv
     gb-pdf-to-csv < tests/pdf/56918.pdf > 56918.csv
+
+Create SQL table:
+
+.. code-block:: bash
+
+    gb-create-table postgres://zag@localhost/gamebook

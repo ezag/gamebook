@@ -21,6 +21,7 @@ setup(
         'enum34',
         'lxml',
         'pdfminer',
+        'psycopg2',
         'sqlalchemy',
     ),
     setup_requires=[] + pytest_runner + setuptools_lint,
@@ -31,6 +32,7 @@ setup(
         console_scripts=(
             'gb-pdf-to-csv = gamebook:pdf_to_csv',
             'gb-url-to-csv = gamebook:url_to_csv',
+            'gb-create-table = gamebook:create_table',
         ),
     ),
 )

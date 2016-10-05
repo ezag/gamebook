@@ -4,6 +4,9 @@ import logging
 import sys
 import urllib2
 
+from sqlalchemy.engine import create_engine
+
+from .database import metadata
 from .parse import GamebookParser
 from .player import Player
 
@@ -75,3 +78,8 @@ def url_to_csv():
                 row.spt_pct,
             )
             out.writerow(csvrow)
+
+
+def create_table():
+    engine = create_engine(sys.argv[1])
+    metadata.create_all(engine)
