@@ -36,7 +36,7 @@ class Player(object):
         tree = cls.get_html(profile_url)
         comment = tree.xpath('//comment()[contains(., "GSIS")]')
         if not comment:
-            logger.info('...not found')
+            logger.warning('Missing GSIS ID at %s', profile_url)
             return ''
         comment = comment[0].text
         gsis_id = [
@@ -69,10 +69,15 @@ class Player(object):
                     'DidNotPlayVisitor',
                     'NotActiveVisitor',
         )))))
-        return [
-            players.get(short_name.replace(' ', '.'))
-            for short_name in short_names
-        ]
+        full_names = []
+        for short_name in short_names:
+            full_name = players.get(short_name.replace(' ', '.'))
+            if full_name is None:
+                logger.warning(
+                    'Missing full name for %s at %s',
+                    short_name, url)
+            full_names.append(full_name)
+        return full_names
 
     @classmethod
     def full_name(cls, game_url, short_name):
@@ -86,7 +91,10 @@ class Player(object):
         tree = cls.get_html(url)
         profile_url = tree.xpath('//a[@class="player"]/@href')
         if profile_url:
-            assert len(profile_url) == 1
+            if len(profile_url) > 1:
+                logger.warning(
+                    'Ignoring extra profile URLs for %s %s at %s',
+                    first_name, last_name, url)
             profile_url = profile_url[0]
         else:
             logger.info('...falling back to Google...')
@@ -107,8 +115,12 @@ class Player(object):
         )))
         results = cls.get_json(url)
         if 'items' not in results or not results['items']:
-            logger.info('...not found')
+            logger.warning('Missing profile for %s %s', first_name, last_name)
             return None
+        if len(results['items']) > 1:
+            logger.warning(
+                'Ignoring extra profile URLs for %s %s at %s',
+                first_name, last_name, url)
         return results['items'][0]['link']
 
     @classmethod
