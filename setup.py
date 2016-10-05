@@ -21,7 +21,6 @@ setup(
         'enum34',
         'lxml',
         'pdfminer',
-        'requests',
     ),
     setup_requires=[] + pytest_runner + setuptools_lint,
     tests_require=(
