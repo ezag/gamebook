@@ -229,7 +229,7 @@ class Player(object):
         try:
             return urllib2.urlopen(url, timeout=30)
         except urllib2.URLError as exc:
-            logger.warning('Failed accessing URL %s - %s', url, exc.reason)
+            logger.warning('Failed accessing URL %s - %s', url, exc)
             if retries > 0:
                 logger.info('Retry in %s seconds', delay_sec)
                 return cls.urlopen_with_retry(url, retries - 1, delay_sec + 5)
