@@ -55,11 +55,11 @@ class Player(object):
     def full_names(cls, game_url, names_teams_positions):
 
         def players_from_tree(tree, suffix):
-            return  dict(
-                (element.xpath('./@Player')[0], (
-                    element.xpath('./@NickName')[0],
-                    element.xpath('./@LastName')[0],
-            )) for element in tree.xpath(
+            return  ((
+                element.xpath('./@NickName')[0],
+                element.xpath('./@LastName')[0],
+                element.xpath('./@Position')[0],
+            ) for element in tree.xpath(
                 '/Gamebook/GamebookSummary/*[{}]'.format('|'.join(
                     'self::{}{}'.format(element, suffix) for element in (
                         'OffensiveStarter',
@@ -69,20 +69,77 @@ class Player(object):
                         'NotActive',
             )))))
 
+        def position_does_match(one, another):
+            return (
+                one == another or
+                sorted((one, another)) == sorted(('T', 'LT')) or
+                sorted((one, another)) == sorted(('T', 'RT')))
+
         url = '.'.join((game_url.rsplit('.', 1)[0], 'xml'))
         tree = cls.get_xml(url)
-        home_players = players_from_tree(tree, 'Home')
-        visitor_players = players_from_tree(tree, 'Visitor')
         home_team = tree.xpath('/Gamebook/GamebookSummary/@HomeTeam')[0]
         visitor_team = tree.xpath('/Gamebook/GamebookSummary/@VisitingTeam')[0]
-        players = {home_team: home_players, visitor_team: visitor_players}
+        home_players = players_from_tree(tree, 'Home')
+        visitor_players = players_from_tree(tree, 'Visitor')
+        players = [(
+                '{:.1} {}'.format(player[0], player[1]),
+                player[0],
+                player[1],
+                player[2],
+                home_team,
+            ) for player in home_players
+        ] + [(
+                '{:.1} {}'.format(player[0], player[1]),
+                player[0],
+                player[1],
+                player[2],
+                visitor_team,
+            ) for player in visitor_players
+        ]
         full_names = []
         for short_name, team_name, position in names_teams_positions:
-            full_name = players[team_name].get(short_name.replace(' ', '.', 1))
-            if full_name is None:
+            logger.info('Long name for %s...', short_name)
+            logger.info('...matching by name %s...', short_name)
+            matches_by_name = [player for player in players if player[0] == short_name]
+            if not matches_by_name:
+                logger.error('Missing full name for %s', short_name)
+                full_names.append(None)
+                continue
+            logger.info('...matches by name: %s...', len(matches_by_name))
+            if len(matches_by_name) == 1:
+                match = matches_by_name[0]
+                full_name = (match[1], match[2])
+                logger.info('...found: %s %s', *full_name)
+                full_names.append(full_name)
+                continue
+            logger.info('...matching by team %s...', team_name)
+            matches_by_team = [player for player in matches_by_name if player[4] == team_name]
+            if not matches_by_team:
+                logger.error('Missing full name for %s', short_name)
+                full_names.append(None)
+                continue
+            logger.info('...matches by team: %s...', len(matches_by_team))
+            if len(matches_by_team) == 1:
+                match = matches_by_team[0]
+                full_name = (match[1], match[2])
+                logger.info('...found: %s %s', *full_name)
+                full_names.append(full_name)
+                continue
+            logger.info('...matching by position %s...', position)
+            matches_by_position = [
+                player for player in matches_by_team
+                if position_does_match(player[3], position)]
+            if not matches_by_position:
+                logger.error('Missing full name for %s', short_name)
+                full_names.append(None)
+                continue
+            if len(matches_by_position) > 1:
                 logger.warning(
-                    'Missing full name for %s at %s',
-                    short_name, url)
+                    'Short name %s in ambiguous - %s matches, using first',
+                    short_name, len(matches_by_position))
+            match = matches_by_position[0]
+            full_name = (match[1], match[2])
+            logger.info('...found: %s %s', *full_name)
             full_names.append(full_name)
         return full_names
 
