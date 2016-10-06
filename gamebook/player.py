@@ -144,7 +144,7 @@ class Player(object):
 
     @classmethod
     def get_tree(cls, url, parser):
-        response = urllib2.urlopen(url)
+        response = cls.urlopen_with_retry(url)
         tree = etree.parse(response, parser)
         response.close()
         return tree
@@ -159,7 +159,20 @@ class Player(object):
 
     @classmethod
     def get_json(cls, url):
-        response = urllib2.urlopen(url)
+        response = cls.urlopen_with_retry(url)
         data = json.load(response)
         response.close()
         return data
+
+    @classmethod
+    def urlopen_with_retry(cls, url, retries=3, delay_sec=5):
+        try:
+            return urllib2.urlopen(url)
+        except urllib2.URLError as exc:
+            logger.warning('Failed accessing URL %s - %s', url, exc.reason)
+            if retries > 0:
+                logger.info('Retry in %s seconds', delay_sec)
+                return cls.urlopen_with_retry(url, retries - 1, delay_sec + 5)
+            else:
+                logger.info('No more retries')
+                raise
