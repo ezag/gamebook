@@ -119,7 +119,7 @@ def url_to_db():
                     ),
                     and_(
                         playtime_percentage.c.player_name == row['player_name'],
-                        playtime_percentage.c.player_name == row['team'],
+                        playtime_percentage.c.team == row['team'],
                         playtime_percentage.c.gamekey == row['gamekey'],
                 ))
             ))
