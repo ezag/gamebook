@@ -53,29 +53,32 @@ class Player(object):
 
     @classmethod
     def full_names(cls, game_url, short_names_and_teams):
+
+        def players_from_tree(tree, suffix):
+            return  dict(
+                (element.xpath('./@Player')[0], (
+                    element.xpath('./@NickName')[0],
+                    element.xpath('./@LastName')[0],
+            )) for element in tree.xpath(
+                '/Gamebook/GamebookSummary/*[{}]'.format('|'.join(
+                    'self::{}{}'.format(element, suffix) for element in (
+                        'OffensiveStarter',
+                        'DefensiveStarter',
+                        'Substitutions',
+                        'DidNotPlay',
+                        'NotActive',
+            )))))
+
         url = '.'.join((game_url.rsplit('.', 1)[0], 'xml'))
         tree = cls.get_xml(url)
-        players = dict(
-            (element.xpath('./@Player')[0], (
-                element.xpath('./@NickName')[0],
-                element.xpath('./@LastName')[0],
-        )) for element in tree.xpath(
-            '/Gamebook/GamebookSummary/*[{}]'.format('|'.join(
-                'self::{}'.format(element) for element in (
-                    'OffensiveStarterHome',
-                    'DefensiveStarterHome',
-                    'SubstitutionsHome',
-                    'DidNotPlayHome',
-                    'NotActiveHome',
-                    'OffensiveStarterVisitor',
-                    'DefensiveStarterVisitor',
-                    'SubstitutionsVisitor',
-                    'DidNotPlayVisitor',
-                    'NotActiveVisitor',
-        )))))
+        home_players = players_from_tree(tree, 'Home')
+        visitor_players = players_from_tree(tree, 'Visitor')
+        home_team = tree.xpath('/Gamebook/GamebookSummary/@HomeTeam')[0]
+        visitor_team = tree.xpath('/Gamebook/GamebookSummary/@VisitingTeam')[0]
+        players = {home_team: home_players, visitor_team: visitor_players}
         full_names = []
         for short_name, team_name in short_names_and_teams:
-            full_name = players.get(short_name.replace(' ', '.', 1))
+            full_name = players[team_name].get(short_name.replace(' ', '.', 1))
             if full_name is None:
                 logger.warning(
                     'Missing full name for %s at %s',
