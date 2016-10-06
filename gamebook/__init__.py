@@ -69,7 +69,10 @@ def get_rows(url, game_id):
     for team in parsed:
         team_name, data = team
         player_names = [row.player_name for row in data]
-        players_gsis_ids = Player.gsis_ids(url, player_names)
+        player_names_and_team = zip(
+            player_names,
+            [team_name] * len(player_names))
+        players_gsis_ids = Player.gsis_ids(url, player_names_and_team)
         for row, gsis_id in zip(data, players_gsis_ids):
             yield dict(zip(field_names, (
                 game_id,
