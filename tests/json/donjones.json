@@ -1,0 +1,142 @@
+{
+ "kind": "customsearch#search",
+ "url": {
+  "type": "application/json",
+  "template": "https://www.googleapis.com/customsearch/v1?q={searchTerms}&num={count?}&start={startIndex?}&lr={language?}&safe={safe?}&cx={cx?}&cref={cref?}&sort={sort?}&filter={filter?}&gl={gl?}&cr={cr?}&googlehost={googleHost?}&c2coff={disableCnTwTranslation?}&hq={hq?}&hl={hl?}&siteSearch={siteSearch?}&siteSearchFilter={siteSearchFilter?}&exactTerms={exactTerms?}&excludeTerms={excludeTerms?}&linkSite={linkSite?}&orTerms={orTerms?}&relatedSite={relatedSite?}&dateRestrict={dateRestrict?}&lowRange={lowRange?}&highRange={highRange?}&searchType={searchType}&fileType={fileType?}&rights={rights?}&imgSize={imgSize?}&imgType={imgType?}&imgColorType={imgColorType?}&imgDominantColor={imgDominantColor?}&alt=json"
+ },
+ "queries": {
+  "request": [
+   {
+    "title": "Google Custom Search - inurl:donjones inurl:profile",
+    "totalResults": "3",
+    "searchTerms": "inurl:donjones inurl:profile",
+    "count": 3,
+    "startIndex": 1,
+    "inputEncoding": "utf8",
+    "outputEncoding": "utf8",
+    "safe": "off",
+    "cx": "008652676468622773486:v3ihrvnf_xi"
+   }
+  ]
+ },
+ "context": {
+  "title": "gamebook"
+ },
+ "searchInformation": {
+  "searchTime": 0.31241,
+  "formattedSearchTime": "0.31",
+  "totalResults": "3",
+  "formattedTotalResults": "3"
+ },
+ "items": [
+  {
+   "kind": "customsearch#result",
+   "title": "Don Jones, DB for the Cleveland Browns at NFL.com",
+   "htmlTitle": "Don Jones, DB for the Cleveland Browns at NFL.com",
+   "link": "http://www.nfl.com/player/donjones/2541154/profile",
+   "displayLink": "www.nfl.com",
+   "snippet": "Recent Games more. WK, OPP, RESULT, Tackles, Interceptions, Fumbles. Comb\n, Total, Ast, Sck, SFTY, PDef, Int, Yds, Avg, Lng, TDs, FF ...",
+   "htmlSnippet": "Recent Games more. WK, OPP, RESULT, Tackles, Interceptions, Fumbles. Comb\u003cbr\u003e\n, Total, Ast, Sck, SFTY, PDef, Int, Yds, Avg, Lng, TDs, FF&nbsp;...",
+   "cacheId": "ajLMCvD1p7oJ",
+   "formattedUrl": "www.nfl.com/player/donjones/2541154/profile",
+   "htmlFormattedUrl": "www.nfl.com/player/\u003cb\u003edonjones\u003c/b\u003e/2541154/\u003cb\u003eprofile\u003c/b\u003e",
+   "pagemap": {
+    "cse_thumbnail": [
+     {
+      "width": "199",
+      "height": "151",
+      "src": "https://encrypted-tbn2.gstatic.com/images?q=tbn:ANd9GcQsWU1Y0Gq2Rs1H8m0WEqYsL6JnR-dsFk7cwD8VTHNsGRzV8GuwWMEWfO4"
+     }
+    ],
+    "metatags": [
+     {
+      "viewport": "width=1024",
+      "yuiversion": "3.10.3",
+      "twitter:site": "@NFL",
+      "fb:app_id": "108273802559405",
+      "og:title": "Don Jones",
+      "og:image": "http://static.nfl.com/static/content/public/static/img/getty/headshot/J/O/N/JON236068.jpg",
+      "og:url": "http://www.nfl.com/players/donjones/profile?id=JON236068",
+      "og:site_name": "NFL.com",
+      "og:type": "athlete",
+      "prototypejs": "true",
+      "decorator": "default-yui"
+     }
+    ],
+    "cse_image": [
+     {
+      "src": "http://i.nflcdn.com/static/site/7.4/img/logos/watermarks/CLE.gif"
+     }
+    ]
+   }
+  },
+  {
+   "kind": "customsearch#result",
+   "title": "Don Jones, at NFL.com",
+   "htmlTitle": "Don Jones, at NFL.com",
+   "link": "http://www.nfl.com/player/donjones/2517860/profile",
+   "displayLink": "www.nfl.com",
+   "snippet": "DRAFT ORDERROUND 1 ROUND 1Full Order DRAFT RESULTSROUND 1\nComplete Results. QBLos AngelesRamsJaredGoff[1]pick no.1. ON THE CLOCK.",
+   "htmlSnippet": "DRAFT ORDERROUND 1 ROUND 1Full Order DRAFT RESULTSROUND 1\u003cbr\u003e\nComplete Results. QBLos AngelesRamsJaredGoff[1]pick no.1. ON THE CLOCK.",
+   "cacheId": "6jEzomgAJVoJ",
+   "formattedUrl": "www.nfl.com/player/donjones/2517860/profile",
+   "htmlFormattedUrl": "www.nfl.com/player/\u003cb\u003edonjones\u003c/b\u003e/2517860/\u003cb\u003eprofile\u003c/b\u003e",
+   "pagemap": {
+    "metatags": [
+     {
+      "viewport": "width=1024",
+      "yuiversion": "3.10.3",
+      "twitter:site": "@NFL",
+      "fb:app_id": "108273802559405",
+      "og:title": "Don Jones",
+      "og:image": "http://static.nfl.com/static/content/public/static/img/getty/headshot/J/O/N/JON236217.jpg",
+      "og:url": "http://www.nfl.com/players/donjones/profile?id=JON236217",
+      "og:site_name": "NFL.com",
+      "og:type": "athlete",
+      "prototypejs": "true",
+      "decorator": "default-yui"
+     }
+    ],
+    "cse_image": [
+     {
+      "src": "http://static.nfl.com/static/content/public/static/img/getty/headshot/J/O/N/JON236217.jpg"
+     }
+    ]
+   }
+  },
+  {
+   "kind": "customsearch#result",
+   "title": "Don Jones, LB at NFL.com",
+   "htmlTitle": "Don Jones, LB at NFL.com",
+   "link": "http://www.nfl.com/player/donjones/2501481/profile",
+   "displayLink": "www.nfl.com",
+   "snippet": "Career Stats more. Season, Team, Tackles, Interceptions, Fumbles. G, GS, Comb\n, Total, Ast, Sck, SFTY, PDef, Int, Yds, Avg, Lng, TDs, FF ...",
+   "htmlSnippet": "Career Stats more. Season, Team, Tackles, Interceptions, Fumbles. G, GS, Comb\u003cbr\u003e\n, Total, Ast, Sck, SFTY, PDef, Int, Yds, Avg, Lng, TDs, FF&nbsp;...",
+   "cacheId": "5H4nKPOCRhUJ",
+   "formattedUrl": "www.nfl.com/player/donjones/2501481/profile",
+   "htmlFormattedUrl": "www.nfl.com/player/\u003cb\u003edonjones\u003c/b\u003e/2501481/\u003cb\u003eprofile\u003c/b\u003e",
+   "pagemap": {
+    "metatags": [
+     {
+      "viewport": "width=1024",
+      "yuiversion": "3.10.3",
+      "twitter:site": "@NFL",
+      "fb:app_id": "108273802559405",
+      "og:title": "Don Jones",
+      "og:image": "http://static.nfl.com/static/content/public/static/img/getty/headshot/J/O/N/JON236811.jpg",
+      "og:url": "http://www.nfl.com/players/donjones/profile?id=JON236811",
+      "og:site_name": "NFL.com",
+      "og:type": "athlete",
+      "prototypejs": "true",
+      "decorator": "default-yui"
+     }
+    ],
+    "cse_image": [
+     {
+      "src": "http://static.nfl.com/static/content/public/static/img/getty/headshot/J/O/N/JON236811.jpg"
+     }
+    ]
+   }
+  }
+ ]
+}

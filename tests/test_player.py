@@ -35,7 +35,7 @@ def path_to_json(name):
         '{}.json'.format(name))
 
 
-def mock_urlopen(url):
+def mock_urlopen(url, **kwargs):
     if url.endswith('xml'):
         name = url.rsplit('/', 2)[-2]
         filename = path_to_xml(name)
@@ -126,6 +126,15 @@ def test_profile_url(monkeypatch):
     assert Player.profile_url('Vladimir', 'Ducasse') == urlnew('vladimirducasse', '2508044')
     assert Player.profile_url('Kyle', 'Long') == url('KyleLong', 'LON395646')
     assert Player.profile_url('Jay', 'Cutler') == url('JayCutler', 'CUT288111')
+
+
+def test_profile_url_ambiguous(monkeypatch):
+
+    def urlnew(slug, id_):
+        return 'http://www.nfl.com/player/{}/{}/profile'.format(slug, id_)
+
+    monkeypatch.setattr(urllib2, 'urlopen', mock_urlopen)
+    assert Player.profile_url('Don', 'Jones') == urlnew('donjones', '2541154')
 
 
 def test_broken_profile(monkeypatch):
