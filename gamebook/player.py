@@ -1,6 +1,7 @@
 from urllib import urlencode
 import json
 import logging
+import socket
 import time
 import urllib2
 
@@ -235,7 +236,7 @@ class Player(object):
                 old_url, url)
         try:
             return urllib2.urlopen(url, timeout=30)
-        except urllib2.URLError as exc:
+        except (urllib2.URLError, socket.timeout) as exc:
             logger.warning('Failed accessing URL %s - %s', url, exc)
             if retries > 0:
                 logger.info('Retry in %s seconds', delay_sec)
