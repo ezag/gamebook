@@ -98,7 +98,7 @@ class Player(object):
         ]
         full_names = []
         for short_name, team_name, position in names_teams_positions:
-            logger.info('Long name for %s...', short_name)
+            logger.info('Full name for %s...', short_name)
             logger.info('...matching by name %s...', short_name)
             matches_by_name = [player for player in players if player[0] == short_name]
             if not matches_by_name:
