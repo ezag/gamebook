@@ -73,7 +73,10 @@ class Player(object):
             return (
                 one == another or
                 sorted((one, another)) == sorted(('T', 'LT')) or
-                sorted((one, another)) == sorted(('T', 'RT')))
+                sorted((one, another)) == sorted(('T', 'RT')) or
+                sorted((one, another)) == sorted(('LB', 'OLB')) or
+                sorted((one, another)) == sorted(('LB', 'ILB'))
+            )
 
         url = '.'.join((game_url.rsplit('.', 1)[0], 'xml'))
         tree = cls.get_xml(url)
