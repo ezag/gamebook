@@ -227,6 +227,12 @@ class Player(object):
 
     @classmethod
     def urlopen_with_retry(cls, url, retries=3, delay_sec=5):
+        old_url = url
+        url = url.replace(' ', '+')
+        if url != old_url:
+            logger.warning(
+                'URL "%s" contains spaces, replacing with "%s"',
+                old_url, url)
         try:
             return urllib2.urlopen(url, timeout=30)
         except urllib2.URLError as exc:
