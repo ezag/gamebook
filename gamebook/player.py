@@ -11,16 +11,16 @@ logger = logging.getLogger(__name__)
 class Player(object):
 
     @classmethod
-    def gsis_id(cls, game_url, short_name, team_name):
-        full_name = cls.full_name(game_url, short_name, team_name)
+    def gsis_id(cls, game_url, short_name, team_name, position):
+        full_name = cls.full_name(game_url, short_name, team_name, position)
         if full_name is None:
             return ''
         profile_url = cls.profile_url(*full_name)
         return cls.gsis_id_from_profile_url(profile_url)
 
     @classmethod
-    def gsis_ids(cls, game_url, short_names_and_teams):
-        full_names = cls.full_names(game_url, short_names_and_teams)
+    def gsis_ids(cls, game_url, names_teams_positions):
+        full_names = cls.full_names(game_url, names_teams_positions)
         profile_urls = [
             cls.profile_url(*full_name) if full_name is not None else None
             for full_name in full_names]
@@ -52,7 +52,7 @@ class Player(object):
         return gsis_id
 
     @classmethod
-    def full_names(cls, game_url, short_names_and_teams):
+    def full_names(cls, game_url, names_teams_positions):
 
         def players_from_tree(tree, suffix):
             return  dict(
@@ -77,7 +77,7 @@ class Player(object):
         visitor_team = tree.xpath('/Gamebook/GamebookSummary/@VisitingTeam')[0]
         players = {home_team: home_players, visitor_team: visitor_players}
         full_names = []
-        for short_name, team_name in short_names_and_teams:
+        for short_name, team_name, position in names_teams_positions:
             full_name = players[team_name].get(short_name.replace(' ', '.', 1))
             if full_name is None:
                 logger.warning(
@@ -87,8 +87,8 @@ class Player(object):
         return full_names
 
     @classmethod
-    def full_name(cls, game_url, short_name, team_name):
-        return cls.full_names(game_url, [(short_name, team_name)])[0]
+    def full_name(cls, game_url, short_name, team_name, position):
+        return cls.full_names(game_url, [(short_name, team_name, position)])[0]
 
     @classmethod
     def profile_url(cls, first_name, last_name):

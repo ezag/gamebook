@@ -60,44 +60,51 @@ def mock_urlopen(url):
 def test_gsis_id(monkeypatch):
     monkeypatch.setattr(urllib2, 'urlopen', mock_urlopen)
     game_url = 'http://www.nflgsis.com/2015/reg/01/56505/Gamebook.pdf'
-    assert Player.gsis_id(game_url, 'J Sitton', 'Green Bay Packers') == '00-0026275'
-    assert Player.gsis_id(game_url, 'T Lang', 'Green Bay Packers') == '00-0027078'
-    assert Player.gsis_id(game_url, 'B Bulaga', 'Green Bay Packers') == '00-0027875'
-    assert Player.gsis_id(game_url, 'A Rodgers', 'Green Bay Packers') == '00-0023459'
-    assert Player.gsis_id(game_url, 'D Bakhtiari', 'Green Bay Packers') == '00-0030074'
-    assert Player.gsis_id(game_url, 'J Bushrod', 'Chicago Bears') == '00-0025512'
-    assert Player.gsis_id(game_url, 'M Slauson', 'Chicago Bears') == '00-0026500'
-    assert Player.gsis_id(game_url, 'V Ducasse', 'Chicago Bears') == '00-0027667'
-    assert Player.gsis_id(game_url, 'K Long', 'Chicago Bears') == '00-0030441'
-    assert Player.gsis_id(game_url, 'J Cutler', 'Chicago Bears') == '00-0024226'
+    assert Player.gsis_id(game_url, 'J Sitton', 'Green Bay Packers', 'G') == '00-0026275'
+    assert Player.gsis_id(game_url, 'T Lang', 'Green Bay Packers', 'G') == '00-0027078'
+    assert Player.gsis_id(game_url, 'B Bulaga', 'Green Bay Packers', 'T') == '00-0027875'
+    assert Player.gsis_id(game_url, 'A Rodgers', 'Green Bay Packers', 'QB') == '00-0023459'
+    assert Player.gsis_id(game_url, 'D Bakhtiari', 'Green Bay Packers', 'T') == '00-0030074'
+    assert Player.gsis_id(game_url, 'J Bushrod', 'Chicago Bears', 'T') == '00-0025512'
+    assert Player.gsis_id(game_url, 'M Slauson', 'Chicago Bears', 'G') == '00-0026500'
+    assert Player.gsis_id(game_url, 'V Ducasse', 'Chicago Bears', 'G') == '00-0027667'
+    assert Player.gsis_id(game_url, 'K Long', 'Chicago Bears', 'G') == '00-0030441'
+    assert Player.gsis_id(game_url, 'J Cutler', 'Chicago Bears', 'QB') == '00-0024226'
 
 
 def test_full_name(monkeypatch):
     monkeypatch.setattr(urllib2, 'urlopen', mock_urlopen)
     game_url = 'http://www.nflgsis.com/2015/reg/01/56505/Gamebook.pdf'
-    assert Player.full_name(game_url, 'J Sitton', 'Green Bay Packers') == ('Josh', 'Sitton')
-    assert Player.full_name(game_url, 'T Lang', 'Green Bay Packers') == ('T.J.', 'Lang')
-    assert Player.full_name(game_url, 'B Bulaga', 'Green Bay Packers') == ('Bryan', 'Bulaga')
-    assert Player.full_name(game_url, 'A Rodgers', 'Green Bay Packers') == ('Aaron', 'Rodgers')
-    assert Player.full_name(game_url, 'D Bakhtiari', 'Green Bay Packers') == ('David', 'Bakhtiari')
-    assert Player.full_name(game_url, 'J Bushrod', 'Chicago Bears') == ('Jermon', 'Bushrod')
-    assert Player.full_name(game_url, 'M Slauson', 'Chicago Bears') == ('Matt', 'Slauson')
-    assert Player.full_name(game_url, 'V Ducasse', 'Chicago Bears') == ('Vladimir', 'Ducasse')
-    assert Player.full_name(game_url, 'K Long', 'Chicago Bears') == ('Kyle', 'Long')
-    assert Player.full_name(game_url, 'J Cutler', 'Chicago Bears') == ('Jay', 'Cutler')
+    assert Player.full_name(game_url, 'J Sitton', 'Green Bay Packers', 'G') == ('Josh', 'Sitton')
+    assert Player.full_name(game_url, 'T Lang', 'Green Bay Packers', 'G') == ('T.J.', 'Lang')
+    assert Player.full_name(game_url, 'B Bulaga', 'Green Bay Packers', 'T') == ('Bryan', 'Bulaga')
+    assert Player.full_name(game_url, 'A Rodgers', 'Green Bay Packers', 'QB') == ('Aaron', 'Rodgers')
+    assert Player.full_name(game_url, 'D Bakhtiari', 'Green Bay Packers', 'T') == ('David', 'Bakhtiari')
+    assert Player.full_name(game_url, 'J Bushrod', 'Chicago Bears', 'T') == ('Jermon', 'Bushrod')
+    assert Player.full_name(game_url, 'M Slauson', 'Chicago Bears', 'G') == ('Matt', 'Slauson')
+    assert Player.full_name(game_url, 'V Ducasse', 'Chicago Bears', 'G') == ('Vladimir', 'Ducasse')
+    assert Player.full_name(game_url, 'K Long', 'Chicago Bears', 'G') == ('Kyle', 'Long')
+    assert Player.full_name(game_url, 'J Cutler', 'Chicago Bears', 'QB') == ('Jay', 'Cutler')
 
 
 def test_full_name_multispace(monkeypatch):
     monkeypatch.setattr(urllib2, 'urlopen', mock_urlopen)
     game_url = 'http://www.nflgsis.com/2016/REG/04/56953/Gamebook.pdf'
-    assert Player.full_name(game_url, 'K Van Noy', 'Detroit Lions') == ('Kyle', 'Van Noy')
+    assert Player.full_name(game_url, 'K Van Noy', 'Detroit Lions', 'LB') == ('Kyle', 'Van Noy')
 
 
 def test_full_name_from_ambiguous(monkeypatch):
     monkeypatch.setattr(urllib2, 'urlopen', mock_urlopen)
     game_url = 'http://www.nflgsis.com/2016/REG/04/56952/Gamebook.pdf'
-    assert Player.full_name(game_url, 'S Smith', 'Oakland Raiders') == ('Sean', 'Smith')
-    assert Player.full_name(game_url, 'S Smith', 'Baltimore Ravens') == ('Steve', 'Smith')
+    assert Player.full_name(game_url, 'S Smith', 'Oakland Raiders', 'CB') == ('Sean', 'Smith')
+    assert Player.full_name(game_url, 'S Smith', 'Baltimore Ravens', 'WR') == ('Steve', 'Smith')
+
+
+def test_full_name_from_ambiguous_same_team(monkeypatch):
+    monkeypatch.setattr(urllib2, 'urlopen', mock_urlopen)
+    game_url = 'http://www.nflgsis.com/2016/reg/01/56902/Gamebook.pdf'
+    assert Player.full_name(game_url, 'D Smith', 'Tampa Bay Buccaneers', 'LB') == ('Daryl', 'Smith')
+    assert Player.full_name(game_url, 'D Smith', 'Tampa Bay Buccaneers', 'T') == ('Donovan', 'Smith')
 
 
 def test_profile_url(monkeypatch):
@@ -129,11 +136,11 @@ def test_broken_profile(monkeypatch):
 def test_broken_full_name(monkeypatch):
     monkeypatch.setattr(urllib2, 'urlopen', mock_urlopen)
     game_url = 'http://www.nflgsis.com/2015/reg/01/56505/Gamebook.pdf'
-    assert Player.full_name(game_url, 'N Existent', 'Green Bay Packers') == None
-    assert Player.gsis_id(game_url, 'N Existent', 'Green Bay Packers') == ''
+    assert Player.full_name(game_url, 'N Existent', 'Green Bay Packers', 'G') == None
+    assert Player.gsis_id(game_url, 'N Existent', 'Green Bay Packers', 'G') == ''
     assert Player.gsis_ids(game_url, [
-        ('N Existent', 'Green Bay Packers'),
-        ('J Sitton', 'Green Bay Packers'),
+        ('N Existent', 'Green Bay Packers', 'G'),
+        ('J Sitton', 'Green Bay Packers', 'G'),
     ]) == [
         '',
         '00-0026275',
