@@ -1,6 +1,7 @@
 from urllib import urlencode
 import json
 import logging
+import time
 import urllib2
 
 from lxml import etree
@@ -232,6 +233,7 @@ class Player(object):
             logger.warning('Failed accessing URL %s - %s', url, exc)
             if retries > 0:
                 logger.info('Retry in %s seconds', delay_sec)
+                time.sleep(delay_sec)
                 return cls.urlopen_with_retry(url, retries - 1, delay_sec + 5)
             else:
                 logger.info('No more retries')
