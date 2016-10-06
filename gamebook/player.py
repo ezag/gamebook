@@ -224,7 +224,7 @@ class Player(object):
     @classmethod
     def urlopen_with_retry(cls, url, retries=3, delay_sec=5):
         try:
-            return urllib2.urlopen(url)
+            return urllib2.urlopen(url, timeout=30)
         except urllib2.URLError as exc:
             logger.warning('Failed accessing URL %s - %s', url, exc.reason)
             if retries > 0:
