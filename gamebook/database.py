@@ -18,6 +18,6 @@ playtime_percentage = Table('playtime_percentage', metadata,
     Column('def_pct', Integer),
     Column('spt_snaps', Integer),
     Column('spt_pct', Integer),
-    UniqueConstraint('gamekey', 'player_name', 'team'),
+    UniqueConstraint('gamekey', 'player_name', 'team', 'position'),
     UniqueConstraint('gamekey', 'player_id'),
 )

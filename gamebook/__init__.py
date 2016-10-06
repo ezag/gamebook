@@ -117,13 +117,14 @@ def url_to_db():
             result = conn.execute(playtime_percentage.delete().where(
                 or_(
                     and_(
-                        playtime_percentage.c.player_id == row['player_id'],
                         playtime_percentage.c.gamekey == row['gamekey'],
+                        playtime_percentage.c.player_id == row['player_id'],
                     ),
                     and_(
+                        playtime_percentage.c.gamekey == row['gamekey'],
                         playtime_percentage.c.player_name == row['player_name'],
                         playtime_percentage.c.team == row['team'],
-                        playtime_percentage.c.gamekey == row['gamekey'],
+                        playtime_percentage.c.position == row['position'],
                 ))
             ))
             logger.warning(
