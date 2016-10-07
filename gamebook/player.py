@@ -77,7 +77,8 @@ class Player(object):
                 sorted((one, another)) == sorted(('T', 'LT')) or
                 sorted((one, another)) == sorted(('T', 'RT')) or
                 sorted((one, another)) == sorted(('LB', 'OLB')) or
-                sorted((one, another)) == sorted(('LB', 'ILB'))
+                sorted((one, another)) == sorted(('LB', 'ILB')) or
+                sorted((one, another)) == sorted(('DE', 'DL'))
             )
 
         url = '.'.join((game_url.rsplit('.', 1)[0], 'xml'))
