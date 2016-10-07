@@ -9,7 +9,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy import and_, or_
 
 from .database import metadata, playtime_percentage
-from .parse import GamebookParser
+from .parse import GamebookParser, MissingPlaytimePercentage
 from .player import Player
 
 
@@ -20,9 +20,16 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+def parse_or_die(pdf):
+    try:
+        return GamebookParser(pdf).extract_playtime_percentage()
+    except MissingPlaytimePercentage as exc:
+        logging.critical(exc)
+        sys.exit(1)
+
+
 def pdf_to_csv():
-    gb = GamebookParser(sys.stdin)
-    parsed = gb.extract_playtime_percentage()
+    parsed = parse_or_die(sys.stdin)
     out = csv.writer(sys.stdout)
     out.writerow((
         'team_name',
@@ -64,8 +71,7 @@ def get_rows(url, game_id):
     response = urllib2.urlopen(url)
     pdf = StringIO(response.read())
     response.close()
-    gb = GamebookParser(pdf)
-    parsed = gb.extract_playtime_percentage()
+    parsed = parse_or_die(pdf)
     for team in parsed:
         team_name, data = team
         player_names = [row.player_name for row in data]

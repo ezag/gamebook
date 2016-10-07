@@ -87,10 +87,10 @@ class Grid(object):
                         (component.y1 - component.y0) / rows_num)
         for value in (grid.x_off, grid.x_def, grid.x_spt):
             if value is None:
-                raise ValueError('Unable to derive full grid from components')
+                raise MissingPlaytimePercentage("Missing playtime percentage data")
         for value in (grid.y_0, grid.y_delta):
             if len(value) < len(components):
-                raise ValueError('Unable to derive full grid from components')
+                raise MissingPlaytimePercentage("Missing playtime percentage data")
         return grid
 
     def column_for(self, component):
@@ -140,7 +140,7 @@ class GamebookParser(object):
                     start_page_num = page_num
                     break
             if start_page_num is None:
-                raise MissingPlaytimePercentage
+                raise MissingPlaytimePercentage("Missing playtime percentage header")
             page_numbers = range(start_page_num, len(pages) + 1)
             assert len(layouts) == len(page_numbers)
             layouts.reverse()

@@ -1,8 +1,9 @@
 import os.path
 
 from pdfminer.layout import LTPage
+import pytest
 
-from gamebook.parse import Column, GamebookParser, Grid
+from gamebook.parse import Column, GamebookParser, Grid, MissingPlaytimePercentage
 
 
 gamekeys = (
@@ -265,6 +266,12 @@ def test_extract_playtime_percentage_56505():
                 (u"P O'Donnell"    , u'P' ,  0,   0,  0,   0,  7, 27),
                 (u'P Omameh'       , u'G' ,  0,   0,  0,   0,  6, 23),
             ]))
+
+
+def test_missing_data():
+    with pytest.raises(MissingPlaytimePercentage):
+        with open(path_to_pdf('56964')) as pdf_file:
+            GamebookParser(pdf_file).extract_playtime_percentage()
 
 
 def test_extract_playtime_percentage_56918():
