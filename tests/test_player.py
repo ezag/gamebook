@@ -105,6 +105,9 @@ def test_full_name_from_ambiguous_same_team(monkeypatch):
     game_url = 'http://www.nflgsis.com/2016/reg/01/56902/Gamebook.pdf'
     assert Player.full_name(game_url, 'D Smith', 'Tampa Bay Buccaneers', 'LB') == ('Daryl', 'Smith')
     assert Player.full_name(game_url, 'D Smith', 'Tampa Bay Buccaneers', 'T') == ('Donovan', 'Smith')
+    game_url = 'http://www.nflgsis.com/2016/reg/04/56956/Gamebook.pdf'
+    assert Player.full_name(game_url, 'J Jenkins', 'New York Jets', 'LB') == ('Jordan', 'Jenkins')
+    assert Player.full_name(game_url, 'J Jenkins', 'New York Jets', 'DE') == ('Jarvis', 'Jenkins')
 
 
 def test_profile_url(monkeypatch):
