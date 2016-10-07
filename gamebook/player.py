@@ -150,7 +150,7 @@ class Player(object):
                 match for match in matches_by_position
                 if match not in ignore]
             logger.warning(
-                'Short name %s in ambiguous - %s matches, %s without already used',
+                'Short name %s is ambiguous - %s matches, %s without already used',
                 short_name, len(matches_by_position), len(matches_without_ignored))
             match = matches_without_ignored[0]
             ignore.add(match)
