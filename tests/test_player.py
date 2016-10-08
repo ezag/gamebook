@@ -170,3 +170,9 @@ def test_broken_gsis_id(monkeypatch):
     monkeypatch.setattr(urllib2, 'urlopen', mock_urlopen)
     url = 'http://www.nfl.com/player/brokengsis/test/profile' 
     assert Player.gsis_id_from_profile_url(url) == ''
+
+
+def test_empty_gsis_id(monkeypatch):
+    monkeypatch.setattr(urllib2, 'urlopen', mock_urlopen)
+    url = 'http://www.nfl.com/player/michaelmitchell/2521370/profile'
+    assert Player.gsis_id_from_profile_url(url) == ''
