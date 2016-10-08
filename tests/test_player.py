@@ -113,12 +113,9 @@ def test_full_name_from_ambiguous_same_team(monkeypatch):
 def test_full_name_indistinguishable(monkeypatch):
     monkeypatch.setattr(urllib2, 'urlopen', mock_urlopen)
     game_url = 'http://www.nflgsis.com/2016/reg/01/56914/Gamebook.pdf'
-    full_names = Player.full_names(game_url, [
-        ('J Brown', 'Arizona Cardinals', 'WR'),
-        ('J Brown', 'Arizona Cardinals', 'WR'),
-    ])
-    assert ('Jaron', 'Brown') in full_names
-    assert ('John', 'Brown') in full_names
+    full_name_1 = Player.full_name(game_url, 'J Brown', 'Arizona Cardinals', 'WR')
+    full_name_2 = Player.full_name(game_url, 'J Brown', 'Arizona Cardinals', 'WR')
+    assert full_name_1 != full_name_2
 
 
 def test_profile_url(monkeypatch):

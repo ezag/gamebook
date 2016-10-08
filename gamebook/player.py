@@ -103,7 +103,6 @@ class Player(object):
             ) for player in visitor_players
         ]
         full_names = []
-        ignore = set()
         for short_name, team_name, position in names_teams_positions:
             logger.info('Full name for %s...', short_name)
             logger.info('...matching by name %s...', short_name)
@@ -140,20 +139,11 @@ class Player(object):
                 logger.error('Missing full name for %s', short_name)
                 full_names.append(None)
                 continue
-            if len(matches_by_position) == 1:
-                match = matches_by_position[0]
-                full_name = (match[1], match[2])
-                logger.info('...found: %s %s', *full_name)
-                full_names.append(full_name)
-                continue
-            matches_without_ignored = [
-                match for match in matches_by_position
-                if match not in ignore]
-            logger.warning(
-                'Short name %s is ambiguous - %s matches, %s without already used',
-                short_name, len(matches_by_position), len(matches_without_ignored))
-            match = matches_without_ignored[0]
-            ignore.add(match)
+            if len(matches_by_position) > 1:
+                logger.warning(
+                    'Short name %s is ambiguous - %s matches, using first',
+                    short_name, len(matches_by_position))
+            match = matches_by_position[0]
             full_name = (match[1], match[2])
             logger.info('...found: %s %s', *full_name)
             full_names.append(full_name)
