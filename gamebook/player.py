@@ -1,6 +1,7 @@
 from urllib import urlencode
 import json
 import logging
+import re
 import socket
 import time
 import urllib2
@@ -50,6 +51,9 @@ class Player(object):
             for line in comment.split('\n')
             if line.strip().startswith('GSIS ID:')
         ][0]
+        if not re.match('^[0-9]{2}-[0-9]{7}$', gsis_id):
+            logger.warning('Ignoring invalid GSIS ID: %s', gsis_id)
+            return ''
         logger.info('...found: %s', gsis_id)
         return gsis_id
 
