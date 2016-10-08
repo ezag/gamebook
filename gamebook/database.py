@@ -21,3 +21,14 @@ playtime_percentage = Table('playtime_percentage', metadata,
     UniqueConstraint('gamekey', 'player_name', 'team', 'position'),
     UniqueConstraint('gamekey', 'player_id'),
 )
+
+player = Table('player', metadata,
+    Column('gsis_id', String, primary_key=True),
+    Column('name', String),
+    Column('first_name', String),
+    Column('last_name', String),
+    Column('team', String),
+    Column('position', String),
+    Column('profile_url', String),
+    UniqueConstraint('first_name', 'last_name', 'team', 'position'),
+)
