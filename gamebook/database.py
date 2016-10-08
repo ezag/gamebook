@@ -30,5 +30,5 @@ player = Table('player', metadata,
     Column('team', String),
     Column('position', String),
     Column('profile_url', String),
-    UniqueConstraint('first_name', 'last_name', 'team', 'position'),
+    UniqueConstraint('name', 'team', 'position'),
 )
