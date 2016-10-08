@@ -4,11 +4,12 @@ import logging
 import sys
 import urllib2
 
+from sqlalchemy import and_, or_
 from sqlalchemy.engine import create_engine
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy import and_, or_
+from sqlalchemy.sql import select
 
-from .database import metadata, playtime_percentage
+from .database import metadata, players, playtime_percentage
 from .parse import GamebookParser, MissingPlaytimePercentage
 from .player import Player
 
@@ -66,7 +67,49 @@ field_names = (
 )
 
 
-def get_rows(url, game_id):
+def gsis_ids_with_cache(url, names_teams_positions, conn):
+    uncached = []
+    gsis_ids = {}
+    for row in names_teams_positions:
+        name, team, position = row
+        result = conn.execute(select([players.c.gsis_id]).where(and_(
+            players.c.name == name,
+            players.c.team == team,
+            players.c.position == position,
+        ))).first()
+        if result is None:
+            uncached.append(row)
+            continue
+        gsis_id = result[0]
+        gsis_ids[row] = gsis_id
+        logger.info('Locally retrieved GSIS ID for %s: %s', name, gsis_id)
+    uncached_gsis_ids = Player.gsis_ids(url, uncached)
+    for row, gsis_id in zip(uncached, uncached_gsis_ids):
+        if not gsis_id:
+            continue
+        name, team, position = row
+        logger.info('Saving GSIS ID for %s locally', name)
+        result = conn.execute(players.update().where(
+            players.c.gsis_id == '00-0024226'
+        ).values(
+            name=name,
+            team=team,
+            position=position,
+        ))
+        if result.rowcount > 0:
+            logger.warning('Overwrote existing record for GSIS ID %s', gsis_id)
+        else:
+            result = conn.execute(players.insert().values(
+                gsis_id=gsis_id,
+                name=name,
+                team=team,
+                position=position,
+            ))
+    gsis_ids.update(zip(uncached, uncached_gsis_ids))
+    return [gsis_ids[row] for row in names_teams_positions]
+
+
+def get_rows(url, game_id, conn=None):
     gamekey = url.rsplit('/', 2)[-2]
     response = urllib2.urlopen(url)
     pdf = StringIO(response.read())
@@ -81,7 +124,10 @@ def get_rows(url, game_id):
             [team_name] * len(player_names),
             positions,
         )
-        players_gsis_ids = Player.gsis_ids(url, names_teams_positions)
+        players_gsis_ids = (
+            gsis_ids_with_cache(url, names_teams_positions, conn)
+            if conn is not None
+            else Player.gsis_ids(url, names_teams_positions))
         for row, gsis_id in zip(data, players_gsis_ids):
             yield dict(zip(field_names, (
                 game_id,
@@ -114,7 +160,7 @@ def url_to_db():
     db_uri = sys.argv[3]
     engine = create_engine(db_uri)
     conn = engine.connect()
-    for row in get_rows(url, game_id):
+    for row in get_rows(url, game_id, conn):
         if not row['player_id']:
             row['player_id'] = None
         try:
