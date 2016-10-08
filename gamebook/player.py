@@ -141,8 +141,10 @@ class Player(object):
                 continue
             if len(matches_by_position) > 1:
                 logger.warning(
-                    'Short name %s is ambiguous - %s matches, using first',
+                    'Short name %s is ambiguous - %s matches, skipping',
                     short_name, len(matches_by_position))
+                full_names.append(None)
+                continue
             match = matches_by_position[0]
             full_name = (match[1], match[2])
             logger.info('...found: %s %s', *full_name)
