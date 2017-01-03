@@ -10,7 +10,7 @@ pytest_runner = ['pytest-runner'] if needs_pytest else []
 
 setup(
     name='gamebook',
-    version='1.0.dev0',
+    version='1.0',
     author='Eugen Zagorodniy',
     author_email='e.zagorodniy@gmail.com',
     description='Extract snap counts from NFL players',
